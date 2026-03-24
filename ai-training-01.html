@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI研修 第1回 — AIを安全に使い、業務で成果を出すための基礎</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --blue: #006EE6;
+  --blue-dark: #0058C0;
+  --blue-light: #E6F0FF;
+  --orange: #E6731E;
+  --orange-light: #FEF1E6;
+  --black: #000000;
+  --text: #222222;
+  --text-sub: #333333;
+  --text-light: #999999;
+  --bg: #ffffff;
+  --bg-gray: #f7f7f7;
+  --border: #d0d0d0;
+  --red: #d93025;
+  --red-light: #fef2f0;
+  --green: #1a7f37;
+  --green-light: #eef9f1;
+}
+
+body {
+  font-family: 'Noto Sans JP', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-gray);
+  color: var(--text);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ── ビューポート＋コンテナ ── */
+
+.slide-viewport {
+  width: 100vw;
+  height: calc(100vh - 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.slide-container {
+  width: 1280px;
+  height: 720px;
+  position: relative;
+  transform-origin: center center;
+  flex-shrink: 0;
+}
+
+/* ── 共通スライド ── */
+
+.slide {
+  width: 1280px;
+  height: 720px;
+  background: var(--bg);
+  padding: 0 12%;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  display: flex;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.slide.exit-up {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.slide.exit-down {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 背景グレーのスライド */
+.slide.bg-gray { background: var(--bg-gray); }
+
+/* ── 順次フェードイン ── */
+
+.anim {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.anim.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── タイトルスライド ── */
+
+.slide.title-slide {
+  background: var(--black);
+  color: var(--bg);
+  padding: 0 12%;
+  justify-content: center;
+}
+
+.slide.title-slide .tag {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 32px;
+}
+
+.slide.title-slide h1 {
+  font-size: 58px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--bg);
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+.slide.title-slide .lead {
+  font-size: 22px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.8;
+  margin-bottom: 56px;
+}
+
+.slide.title-slide .meta {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.35);
+  display: flex;
+  gap: 28px;
+  letter-spacing: 1px;
+}
+
+/* ── セクション区切り ── */
+
+.slide.section-slide {
+  background: var(--bg);
+  padding: 0 12%;
+  justify-content: center;
+}
+
+.slide.section-slide .section-number {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  color: var(--blue);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.slide.section-slide h2 {
+  font-size: 54px;
+  font-weight: 900;
+  color: var(--black);
+  letter-spacing: 1px;
+  line-height: 1.2;
+  margin-bottom: 0;
+}
+
+.slide.section-slide .section-time {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-light);
+  margin-top: 20px;
+  letter-spacing: 1px;
+}
+
+.slide.section-slide .accent-line {
+  width: 40px;
+  height: 3px;
+  background: var(--blue);
+  margin-top: 28px;
+}
+
+/* ── 通常スライド ── */
+
+.slide h2 {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--black);
+  margin-bottom: 32px;
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+}
+
+.slide h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 12px;
+}
+
+.slide p, .slide li {
+  font-size: 19px;
+  line-height: 2;
+  color: var(--text-sub);
+  font-weight: 400;
+}
+
+.slide ul {
+  padding-left: 20px;
+}
+
+.slide ul li {
+  margin-bottom: 6px;
+}
+
+.slide ul li strong {
+  color: var(--black);
+  font-weight: 700;
+}
+
+/* ── コアメッセージ ── */
+
+.core-message {
+  border-left: 3px solid var(--blue);
+  padding: 20px 28px;
+  margin: 20px 0;
+  font-size: 21px;
+  font-weight: 500;
+  color: var(--black);
+  line-height: 1.7;
+  background: var(--bg);
+}
+
+.bg-gray .core-message { background: var(--bg-gray); }
+
+.core-message.warning { border-left-color: var(--red); }
+.core-message.success { border-left-color: var(--green); }
+
+/* ── リスクスライド ── */
+
+.risk-badge {
+  display: inline-block;
+  background: var(--red);
+  color: #fff;
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.risk-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--black);
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+
+.risk-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.countermeasure {
+  border-left: 3px solid var(--green);
+  padding: 12px 24px;
+  margin-top: 24px;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--green);
+}
+
+/* ── コードブロック ── */
+
+.code-block {
+  background: var(--bg-gray);
+  border-radius: 4px;
+  padding: 24px;
+  font-family: 'Inter', 'Noto Sans JP', monospace;
+  font-size: 17px;
+  line-height: 2;
+  white-space: pre-wrap;
+  color: var(--text);
+  margin: 16px 0;
+}
+
+.bg-gray .code-block { background: var(--bg); }
+
+/* ── 目次 ── */
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+}
+
+.toc-list li {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--bg-gray);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 20px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  color: var(--text);
+}
+
+.toc-list li:last-child { border-bottom: none; }
+
+.toc-list li:hover {
+  padding-left: 12px;
+  color: var(--blue);
+}
+
+.toc-list li .toc-number {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-light);
+  width: 24px;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+
+.toc-list li:hover .toc-number { color: var(--blue); }
+
+.toc-list li .toc-time {
+  margin-left: auto;
+  color: var(--text-light);
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* ── NG/OK 比較 ── */
+
+.compare-row {
+  display: flex;
+  gap: 20px;
+  margin: 16px 0;
+}
+
+.compare-box {
+  flex: 1;
+  padding: 24px;
+  font-size: 18px;
+  line-height: 1.8;
+  border-radius: 4px;
+  transition: transform 0.3s;
+}
+
+.compare-box:hover { transform: translateY(-2px); }
+
+.compare-box.ng {
+  background: var(--red-light);
+  border-left: 3px solid var(--red);
+}
+.compare-box.ok {
+  background: var(--green-light);
+  border-left: 3px solid var(--green);
+}
+
+.compare-box .label {
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.compare-box.ng .label { color: var(--red); }
+.compare-box.ok .label { color: var(--green); }
+
+/* ── ルール一覧 ── */
+
+.rule-list {
+  list-style: none;
+  padding: 0;
+  counter-reset: rule;
+}
+
+.rule-list li {
+  counter-increment: rule;
+  padding: 16px 0 16px 4px;
+  border-bottom: 1px solid var(--bg-gray);
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.25s;
+}
+
+.rule-list li:last-child { border-bottom: none; }
+
+.rule-list li::before {
+  content: '0' counter(rule);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--blue);
+  width: 28px;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+
+.rule-list li:hover {
+  padding-left: 12px;
+  background: var(--bg-gray);
+}
+
+/* ── ハンズオン ── */
+
+.work-prompt {
+  background: var(--black);
+  color: #fff;
+  border-radius: 4px;
+  padding: 48px;
+  font-size: 26px;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.6;
+  margin: 24px 0;
+}
+
+/* ── デモ③ タブ切替 ── */
+
+.prompt-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28px;
+}
+
+.prompt-toggle button {
+  padding: 10px 28px;
+  border: none;
+  border-bottom: 2px solid var(--border);
+  background: none;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: var(--text-light);
+  letter-spacing: 0.5px;
+}
+
+.prompt-toggle button.active-bad {
+  border-bottom-color: var(--red);
+  color: var(--red);
+}
+
+.prompt-toggle button.active-good {
+  border-bottom-color: var(--green);
+  color: var(--green);
+}
+
+.prompt-panel { display: none; }
+.prompt-panel.active { display: block; }
+
+.prompt-label {
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.prompt-label.bad { color: var(--red); }
+.prompt-label.good { color: var(--green); }
+
+.prompt-note {
+  font-size: 18px;
+  color: var(--text-sub);
+  margin-top: 16px;
+  line-height: 1.8;
+}
+
+/* ── グリッドカード ── */
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.grid-4 .card {
+  background: var(--bg-gray);
+  border-radius: 4px;
+  padding: 28px;
+  transition: all 0.3s cubic-bezier(0,1,0.64,1);
+}
+
+.bg-gray .grid-4 .card { background: var(--bg); }
+
+.grid-4 .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+}
+
+.grid-4 .card h3 {
+  margin-bottom: 6px;
+  font-size: 19px;
+}
+
+.grid-4 .card p { font-size: 17px; }
+
+/* ── 2カラム ── */
+
+.two-columns {
+  display: flex;
+  gap: 20px;
+  margin-top: 12px;
+}
+
+.two-columns .column {
+  flex: 1;
+  background: var(--bg-gray);
+  border-radius: 4px;
+  padding: 36px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0,1,0.64,1);
+}
+
+.two-columns .column:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+}
+
+.two-columns .column .icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+/* ── ナレッジカード ── */
+
+.knowledge-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.knowledge-card {
+  background: var(--bg-gray);
+  border-radius: 4px;
+  padding: 20px;
+  border-top: 2px solid var(--orange);
+  transition: all 0.3s cubic-bezier(0,1,0.64,1);
+}
+
+.knowledge-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+}
+
+.knowledge-card .card-number {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.knowledge-card .card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+
+.knowledge-card .card-desc {
+  font-size: 15px;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+
+/* ── クロージング ── */
+
+.closing-list {
+  list-style: none;
+  padding: 0;
+}
+
+.closing-list li {
+  padding: 14px 0 14px 4px;
+  font-size: 19px;
+  border-bottom: 1px solid var(--bg-gray);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  line-height: 1.6;
+  transition: all 0.25s;
+}
+
+.closing-list li:last-child { border-bottom: none; }
+
+.closing-list li:hover {
+  padding-left: 12px;
+  background: var(--blue-light);
+}
+
+.closing-list li .check {
+  color: var(--blue);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 3px;
+  font-size: 14px;
+}
+
+/* ── プロセスフロー ── */
+
+.process-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.process-step {
+  background: var(--bg-gray);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.process-step:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+.process-arrow {
+  color: var(--text-light);
+  font-size: 16px;
+}
+
+/* ── 判断基準 ── */
+
+.criteria-list {
+  list-style: none;
+  padding: 0;
+}
+
+.criteria-list li {
+  padding: 14px 20px;
+  margin-bottom: 4px;
+  background: var(--red-light);
+  border-radius: 4px;
+  border-left: 3px solid var(--red);
+  font-size: 18px;
+  color: var(--text-sub);
+  transition: all 0.25s;
+}
+
+.criteria-list li:hover {
+  padding-left: 28px;
+}
+
+/* ── フォーマット ── */
+
+.format-block {
+  background: var(--bg-gray);
+  border-radius: 4px;
+  border-left: 3px solid var(--orange);
+  padding: 28px 32px;
+  font-size: 19px;
+  line-height: 2.2;
+}
+
+.bg-gray .format-block { background: var(--bg); }
+
+.format-block .format-label {
+  color: var(--orange);
+  font-weight: 700;
+}
+
+/* ── 次回予告 ── */
+
+.next-block {
+  background: var(--bg-gray);
+  border-radius: 4px;
+  border-left: 3px solid var(--blue);
+  padding: 20px 28px;
+  margin-top: 24px;
+}
+
+.next-block h3 {
+  color: var(--blue);
+  margin-bottom: 6px;
+  font-size: 19px;
+}
+
+.next-block p { font-size: 17px; }
+
+/* ── ナビゲーション ── */
+
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: var(--bg);
+  border-top: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav-bar button {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--text-light);
+  padding: 6px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: 'Inter', 'Noto Sans JP', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.nav-bar button:hover {
+  color: var(--blue);
+  background: var(--blue-light);
+  border-color: var(--blue-light);
+}
+
+.nav-bar button:disabled {
+  opacity: 0.15;
+  cursor: default;
+  background: none;
+  border-color: transparent;
+}
+
+.nav-bar button.nav-jump {
+  font-size: 11px;
+  padding: 5px 10px;
+  color: var(--text-light);
+  opacity: 0.6;
+}
+
+.nav-bar button.nav-jump:hover {
+  opacity: 1;
+  color: var(--blue);
+  background: var(--blue-light);
+}
+
+.nav-bar button.nav-jump:disabled {
+  opacity: 0.15;
+}
+
+.slide-counter {
+  color: var(--text);
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  min-width: 72px;
+  text-align: center;
+  letter-spacing: 1px;
+  margin: 0 20px;
+}
+
+/* ── 印刷用 ── */
+@media print {
+  @page { size: landscape; margin: 0; }
+  body { overflow: visible; height: auto; width: auto; }
+  .slide-viewport { height: auto; overflow: visible; }
+  .slide-container { transform: none !important; width: 100%; height: auto; position: relative; }
+  .nav-bar { display: none !important; }
+  .slide, .slide.active, .slide.exit-up, .slide.exit-down {
+    position: relative !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    z-index: auto !important;
+    display: flex !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    page-break-after: always;
+    break-after: page;
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .slide:last-child { page-break-after: avoid; }
+  .anim { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="slide-viewport">
+<div class="slide-container" id="slide-container">
+
+<!-- ===== 1: タイトル ===== -->
+<section class="slide title-slide active">
+  <div class="tag anim">BackofficeForce Inc.</div>
+  <h1 class="anim">AI研修<br>第1回</h1>
+  <div class="lead anim">AIを安全に使い、<br>業務で成果を出すための基礎</div>
+  <div class="meta anim">
+    <span>新卒社員向け</span>
+    <span>60 min</span>
+    <span>全3回シリーズ</span>
+  </div>
+</section>
+
+<!-- ===== 2: 目次 ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">Agenda</h2>
+  <ul class="toc-list">
+    <li class="anim" onclick="goToSlide(2)"><span class="toc-number">01</span>導入<span class="toc-time">5 min</span></li>
+    <li class="anim" onclick="goToSlide(6)"><span class="toc-number">02</span>AI基礎理解<span class="toc-time">10 min</span></li>
+    <li class="anim" onclick="goToSlide(11)"><span class="toc-number">03</span>デモ<span class="toc-time">10 min</span></li>
+    <li class="anim" onclick="goToSlide(14)"><span class="toc-number">04</span>リスク・ルール<span class="toc-time">15 min</span></li>
+    <li class="anim" onclick="goToSlide(23)"><span class="toc-number">05</span>ハンズオン＋デモ③<span class="toc-time">15 min</span></li>
+    <li class="anim" onclick="goToSlide(27)"><span class="toc-number">06</span>ナレッジ課題＋次回予告<span class="toc-time">5 min</span></li>
+  </ul>
+</section>
+
+<!-- ===== 3: セクション① ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 01</div>
+  <h2 class="anim">導入</h2>
+  <div class="section-time anim">5 min</div>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 4: テーマ＋ゴール ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">本日のテーマ</h2>
+  <div class="core-message anim" style="font-size:26px; margin-bottom:36px;">
+    AIを安全に使い、業務で成果を出すための基礎
+  </div>
+  <h3 class="anim">60分のゴール</h3>
+  <div class="core-message anim">
+    「使える」と「正しく使える」は違う。<br>今日はその違いを理解する。
+  </div>
+</section>
+
+<!-- ===== 5: 重要メッセージ ===== -->
+<section class="slide">
+  <h2 class="anim">AIは何のためのツールか？</h2>
+  <p class="anim" style="margin-bottom:24px;">
+    AIでよく言われるのは「業務効率化」。時間の短縮、作業の軽減。<br>
+    しかし、もっと重要な価値があります。
+  </p>
+  <div class="core-message anim" style="font-size:24px;">
+    AIは効率化だけではなく、<br><strong>業務の質と再現性</strong>を上げるためのツール
+  </div>
+  <p class="anim" style="margin-top:28px; font-size:16px; color:var(--text-light);">
+    例：先輩が10年かけて身につけたノウハウを、AIで言語化・構造化すれば、<br>
+    新人でも同じレベルに近づける。それが「再現性」。
+  </p>
+</section>
+
+<!-- ===== 6: 世代観点 ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">適応力 × 判断力</h2>
+  <div class="two-columns">
+    <div class="column anim">
+      <div class="icon">&#x1F4BC;</div>
+      <h3>経験がある人</h3>
+      <p>判断力・チェック力が強い</p>
+    </div>
+    <div class="column anim">
+      <div class="icon">&#x1F680;</div>
+      <h3>若手</h3>
+      <p>新しい技術への適応力が強い</p>
+    </div>
+  </div>
+  <div class="core-message anim" style="margin-top:32px; text-align:center;">
+    両方必要。どちらが優れているではない。
+  </div>
+</section>
+
+<!-- ===== 7: セクション② ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 02</div>
+  <h2 class="anim">AI基礎理解</h2>
+  <div class="section-time anim">10 min</div>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 8: 生成AIとは ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">生成AIとは</h2>
+  <p class="anim" style="margin-bottom:28px;">
+    大量のテキストを学習し、次に来る言葉を予測することで文章を生成する技術
+  </p>
+  <div class="core-message anim" style="font-size:30px; text-align:center; padding:36px 28px;">
+    AIは<strong>「それっぽく正しいことを言う」</strong>機械
+  </div>
+  <p class="anim" style="font-size:15px; color:var(--text-light); margin-top:28px; text-align:center;">
+    この一言が、後のリスクの話と直結します
+  </p>
+</section>
+
+<!-- ===== 9: できること ===== -->
+<section class="slide">
+  <h2 class="anim">AIが得意なこと</h2>
+  <div class="grid-4">
+    <div class="card anim">
+      <h3>&#x270D;&#xFE0F; 文章作成</h3>
+      <p>メール、報告書、議事録、案内文</p>
+    </div>
+    <div class="card anim">
+      <h3>&#x1F4CB; 要約・整理</h3>
+      <p>長い文章を短くまとめる</p>
+    </div>
+    <div class="card anim">
+      <h3>&#x1F4CA; 構造化</h3>
+      <p>バラバラな情報を整理する</p>
+    </div>
+    <div class="card anim">
+      <h3>&#x1F4A1; アイデア出し</h3>
+      <p>叩き台・ブレスト的な使い方</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 10: できないこと ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">AIができないこと</h2>
+  <ul class="anim" style="margin-bottom:28px;">
+    <li><strong>正確性の保証</strong> ── 間違っていても断定する</li>
+    <li><strong>最新情報の取得</strong> ── 学習データに制限がある</li>
+    <li><strong>最終判断・責任</strong> ── 責任を取ることができない</li>
+    <li><strong>社内固有の情報</strong> ── 会社のルール・文化は知らない</li>
+  </ul>
+  <div class="core-message warning anim" style="font-size:24px; text-align:center;">
+    「正しそうに見える」 ≠ 「正しい」
+  </div>
+</section>
+
+<!-- ===== 11: 主要AIツール比較 ===== -->
+<section class="slide">
+  <h2 class="anim">主要な生成AIツール</h2>
+  <p class="anim" style="margin-bottom:16px; font-size:17px;">現在よく使われている4つのツールを簡単に紹介します</p>
+  <table class="anim" style="width:100%; border-collapse:collapse; font-size:16px; margin-bottom:16px;">
+    <thead>
+      <tr style="background:var(--blue); color:#fff;">
+        <th style="padding:10px 14px; text-align:left; font-weight:700; border-radius:4px 0 0 0;">ツール</th>
+        <th style="padding:10px 14px; text-align:left; font-weight:700;">提供元</th>
+        <th style="padding:10px 14px; text-align:left; font-weight:700; border-radius:0 4px 0 0;">特徴</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:var(--bg-gray);">
+        <td style="padding:10px 14px; font-weight:700;">ChatGPT</td>
+        <td style="padding:10px 14px;">OpenAI</td>
+        <td style="padding:10px 14px;">最も普及。汎用的で幅広いタスクに対応</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 14px; font-weight:700;">Claude</td>
+        <td style="padding:10px 14px;">Anthropic</td>
+        <td style="padding:10px 14px;">長文の読解・要約が得意。丁寧な回答</td>
+      </tr>
+      <tr style="background:var(--bg-gray);">
+        <td style="padding:10px 14px; font-weight:700;">Copilot</td>
+        <td style="padding:10px 14px;">Microsoft</td>
+        <td style="padding:10px 14px;">Office連携。Word・Excel・Teamsと統合</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 14px; font-weight:700;">Gemini</td>
+        <td style="padding:10px 14px;">Google</td>
+        <td style="padding:10px 14px;">Google連携。検索・Gmail・Docsと統合</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="background:var(--blue-light); border-radius:4px; padding:16px 24px; border-left:3px solid var(--blue);" class="anim">
+    <p style="font-size:17px; margin-bottom:6px;"><strong>&#x1F4A1; この研修でのアプローチ</strong></p>
+    <p style="font-size:16px;">まずは<strong>ChatGPT</strong>で生成AIの基本に慣れる。<br>慣れてきたら他のツールも試して、<strong>アウトプットの違いや得意・不得意を自分で感じてみる</strong>。</p>
+  </div>
+  <p class="anim" style="font-size:14px; color:var(--text-light); text-align:center; margin-top:12px;">
+    どのツールでも、今日学ぶリスク・ルールは共通して適用されます
+  </p>
+</section>
+
+<!-- ===== 12: セクション③ ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 03</div>
+  <h2 class="anim">デモ</h2>
+  <div class="section-time anim">10 min</div>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 13: デモ① ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">デモ① 汎用メール作成</h2>
+  <p class="anim" style="margin-bottom:16px; font-size:16px;">以下のプロンプトをChatGPTに入力します</p>
+  <div class="code-block anim">【状況】備品（コピー用紙）の発注期限を社内に案内するメールを作ってください。
+【宛先】全社員
+【期限】今月末（31日）
+【申請方法】Googleフォームで申請
+【トーン】丁寧だが簡潔に</div>
+  <div style="display:flex; gap:20px; margin-top:16px;">
+    <div class="core-message success anim" style="flex:1; font-size:16px;">
+      <strong>Point</strong> ── ゼロから書く必要がなくなる
+    </div>
+    <div class="core-message success anim" style="flex:1; font-size:16px;">
+      <strong>Point</strong> ── 叩き台として使う発想
+    </div>
+  </div>
+</section>
+
+<!-- ===== 14: デモ② ===== -->
+<section class="slide">
+  <h2 class="anim">デモ② 業務の構造化</h2>
+  <p class="anim" style="margin-bottom:16px; font-size:16px;">以下のプロンプトをChatGPTに入力します</p>
+  <div class="code-block anim">新入社員が社内書類を提出する前に確認すべきチェックリストを作ってください。
+対象書類：経費精算書
+確認観点：記入漏れ・金額ミス・添付書類・承認ルート
+形式：チェックボックス形式でシンプルに</div>
+  <div style="display:flex; gap:20px; margin-top:16px;">
+    <div class="core-message success anim" style="flex:1; font-size:16px;">
+      <strong>Point</strong> ── 整理・構造化もAIの得意領域
+    </div>
+    <div class="core-message success anim" style="flex:1; font-size:16px;">
+      <strong>Point</strong> ── 属人化しやすい業務の言語化に使える
+    </div>
+  </div>
+</section>
+
+<!-- ===== 15: セクション④ ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 04</div>
+  <h2 class="anim">リスク・ルール</h2>
+  <div class="section-time anim">15 min</div>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 16: リスク① ===== -->
+<section class="slide bg-gray">
+  <div class="risk-content">
+    <span class="risk-badge anim">&#x26A0; Risk</span>
+    <div class="risk-title anim">リスク① AIが自信満々に間違える</div>
+    <p class="anim" style="font-size:18px; margin-bottom:16px; line-height:2;">
+      間違っているのに、正しいかのように断定して答えることがあります。<br>
+      これを<strong>ハルシネーション</strong>（幻覚）と呼びます。
+    </p>
+    <ul class="anim" style="margin-bottom:16px;">
+      <li>税率の誤回答</li>
+      <li>仕訳のミス提案</li>
+      <li>存在しないルールの断定</li>
+    </ul>
+    <div class="countermeasure anim">
+      &#x2705; 対策：数字・法律・社内ルールは必ず人が最終確認する
+    </div>
+  </div>
+</section>
+
+<!-- ===== 17: リスク② ===== -->
+<section class="slide">
+  <div class="risk-content">
+    <span class="risk-badge anim">&#x26A0; Risk</span>
+    <div class="risk-title anim">リスク② 機密情報の外部送信</div>
+    <div class="core-message warning anim" style="font-size:19px; margin-bottom:20px;">
+      入力したデータは、外部のサーバーに送信されます。
+    </div>
+    <p class="anim" style="font-size:17px; line-height:2; margin-bottom:12px;">
+      学習オフ設定にしても「安全」とは言い切れない。<br>
+      外部送信・社内規程違反のリスクがある。
+    </p>
+    <div class="countermeasure anim">
+      &#x2705; 原則：実データは入力しない。必要な場合はマスキング（仮名・伏字）する。
+    </div>
+  </div>
+</section>
+
+<!-- ===== 18: NG/OK例 ===== -->
+<section class="slide bg-gray">
+  <div class="risk-content">
+    <span class="risk-badge anim">&#x26A0; Risk</span>
+    <div class="risk-title anim">マスキングの具体例</div>
+    <div class="compare-row">
+      <div class="compare-box ng anim">
+        <div class="label">&#x274C; NG</div>
+        <p>「田中様（得意先コード12345）の先月の請求書に不備がありまして…」</p>
+      </div>
+      <div class="compare-box ok anim">
+        <div class="label">&#x2705; OK</div>
+        <p>「ある取引先の請求書に記入漏れがあった場合、どのように対応すればよいですか？」</p>
+      </div>
+    </div>
+    <p class="anim" style="font-size:17px; color:var(--text-sub); text-align:center; margin-top:20px;">
+      固有情報を抜いた、一般化した聞き方 = <strong>マスキング</strong>
+    </p>
+  </div>
+</section>
+
+<!-- ===== 19: リスク③ ===== -->
+<section class="slide">
+  <div class="risk-content">
+    <span class="risk-badge anim">&#x26A0; Risk</span>
+    <div class="risk-title anim">リスク③ 著作権・コンプライアンス</div>
+    <ul class="anim" style="margin-bottom:28px;">
+      <li>AIの文章は<strong>出典が不明</strong></li>
+      <li>類似文章・既存コンテンツとの<strong>重複リスク</strong></li>
+      <li>誤情報をそのまま<strong>外部発信するリスク</strong></li>
+    </ul>
+    <div class="countermeasure anim">
+      &#x2705; 原則：AIの文章はそのまま使わず、必ず自分で確認・編集する
+    </div>
+  </div>
+</section>
+
+<!-- ===== 20: リスク④ ===== -->
+<section class="slide bg-gray">
+  <div class="risk-content">
+    <span class="risk-badge anim">&#x26A0; Risk</span>
+    <div class="risk-title anim">リスク④ 思考停止・AI依存</div>
+    <div class="core-message warning anim" style="font-size:21px; margin-bottom:24px;">
+      判断をAIに丸投げすることが一番危険
+    </div>
+    <ul class="anim" style="margin-bottom:20px;">
+      <li>AI依存 → <strong>自分の判断力が育たない</strong></li>
+      <li>判断放棄 → <strong>ミスが起きたとき誰も気づけない</strong></li>
+    </ul>
+    <div class="countermeasure anim">
+      &#x2705; 最終判断は必ず人が行う
+    </div>
+  </div>
+</section>
+
+<!-- ===== 21: 判断基準 ===== -->
+<section class="slide">
+  <h2 class="anim">AIを使わない判断基準</h2>
+  <p class="anim" style="margin-bottom:20px;">以下の場面はAIに頼らず、人に確認・相談する</p>
+  <ul class="criteria-list">
+    <li class="anim">&#x1F522; 数字の最終確認（税率・金額・期日）</li>
+    <li class="anim">&#x1F91D; お客様への対応方針の判断</li>
+    <li class="anim">&#x1F4AC; 上司や先輩への相談が必要な場面</li>
+    <li class="anim">&#x1F4DC; 社内規程・法的判断が絡む場面</li>
+  </ul>
+  <div class="core-message anim" style="margin-top:24px; text-align:center; font-size:19px;">
+    使い所を見極めることも「正しく使える」ことの一つ
+  </div>
+</section>
+
+<!-- ===== 22: AIの回答をどう検証するか ===== -->
+<section class="slide">
+  <h2 class="anim">AIの回答を「どう確認するか」</h2>
+  <p class="anim" style="margin-bottom:20px; font-size:18px;">「必ず確認する」は分かった。では具体的に、何をどう確認する？</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:20px;">
+    <div style="background:var(--bg-gray); border-radius:4px; padding:24px 20px; border-top:3px solid var(--blue);" class="anim">
+      <h3 style="font-size:19px; margin-bottom:10px;">&#x1F522; 数字が出たら</h3>
+      <p style="font-size:17px; font-weight:700; color:var(--blue); margin-bottom:8px;">公式サイト・社内規程と照合</p>
+      <p style="font-size:15px; color:var(--text-sub);">例：税率 → 国税庁サイト<br>例：金額 → 見積書・契約書と突合</p>
+    </div>
+    <div style="background:var(--bg-gray); border-radius:4px; padding:24px 20px; border-top:3px solid var(--orange);" class="anim">
+      <h3 style="font-size:19px; margin-bottom:10px;">&#x1F4CB; 手順が出たら</h3>
+      <p style="font-size:17px; font-weight:700; color:var(--orange); margin-bottom:8px;">先輩に口頭確認する</p>
+      <p style="font-size:15px; color:var(--text-sub);">例：申請ルール → 経理担当者に確認<br>例：操作手順 → 実際に試してから実行</p>
+    </div>
+    <div style="background:var(--bg-gray); border-radius:4px; padding:24px 20px; border-top:3px solid var(--green);" class="anim">
+      <h3 style="font-size:19px; margin-bottom:10px;">&#x2709; 文章が出たら</h3>
+      <p style="font-size:17px; font-weight:700; color:var(--green); margin-bottom:8px;">事実確認してから送る</p>
+      <p style="font-size:15px; color:var(--text-sub);">例：メール文面 → 宛先・数字を再確認<br>例：報告書 → 事実関係を裏取り</p>
+    </div>
+  </div>
+  <div class="core-message anim" style="text-align:center; font-size:19px;">
+    確認の「方法」を持つことが、AIを安全に使える最大の武器
+  </div>
+</section>
+
+<!-- ===== 23: ルール ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">AI利用ルール（BackofficeForce版）</h2>
+  <ul class="rule-list">
+    <li class="anim"><strong>機密情報・実データは入力しない</strong>（マスキングして使う）</li>
+    <li class="anim"><strong>必ず人が最終確認する</strong>（AIの出力をそのままにしない）</li>
+    <li class="anim"><strong>鵜呑みにしない</strong>（特に数字・法律・社内ルール）</li>
+    <li class="anim"><strong>AIの文章はそのまま使わず編集する</strong></li>
+    <li class="anim"><strong>判断は人が行う</strong></li>
+  </ul>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-top:28px; text-align:center; letter-spacing:1px;">
+    禁止ではなく、正しく使うためのルール
+  </p>
+</section>
+
+<!-- ===== 24: セクション⑤ ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 05</div>
+  <h2 class="anim">ハンズオン<br>＋デモ③</h2>
+  <div class="section-time anim">15 min</div>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 25: ワーク① ===== -->
+<section class="slide bg-gray" style="text-align:center; align-items:center;">
+  <h2 class="anim">ワーク① あえてシンプルな入力を試す</h2>
+  <p class="anim" style="margin-bottom:28px;">ChatGPTに以下をそのまま入力してください（3分）</p>
+  <div class="work-prompt anim">
+    上司への業務報告メールを作ってください。
+  </div>
+  <p class="anim" style="font-size:16px; color:var(--text-light); margin-top:28px;">
+    &#x1F449; 抽象的な指示には、抽象的な答えが返ってくることを体験する
+  </p>
+</section>
+
+<!-- ===== 26: ワーク② ===== -->
+<section class="slide">
+  <h2 class="anim">ワーク② プロンプトを改善する</h2>
+  <p class="anim" style="margin-bottom:16px;">以下の構成で再入力してみてください（7分）</p>
+  <div class="format-block anim">
+    <span class="format-label">【目的】</span>○○（例：上司への週次業務報告）<br>
+    <span class="format-label">【状況・背景】</span>○○（例：今週担当した業務・起きたこと）<br>
+    <span class="format-label">【条件】</span>○○（例：箇条書き・200字以内・敬語）<br>
+    <span class="format-label">【宛先】</span>○○（例：直属の上司・社内メール）
+  </div>
+  <p class="anim" style="font-size:15px; color:var(--text-light); margin-top:24px; text-align:center;">
+    完了したら、隣の人と30秒シェアしてみましょう
+  </p>
+</section>
+
+<!-- ===== 27: デモ③ ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">デモ③ プロンプト比較 ── 振り返り</h2>
+  <div class="prompt-toggle anim">
+    <button id="btn-bad" class="active-bad" onclick="togglePrompt('bad')">&#x274C; 悪いプロンプト</button>
+    <button id="btn-good" onclick="togglePrompt('good')">&#x2705; 良いプロンプト</button>
+  </div>
+  <div id="panel-bad" class="prompt-panel active">
+    <div class="prompt-label bad anim">&#x274C; 悪いプロンプト例</div>
+    <div class="code-block anim" style="font-size:20px;">メールを作ってください。</div>
+    <div class="prompt-note anim">抽象的な指示 → 抽象的な回答。実務では使えないレベルの内容が返ってくる。</div>
+  </div>
+  <div id="panel-good" class="prompt-panel">
+    <div class="prompt-label good anim">&#x2705; 良いプロンプト例</div>
+    <div class="code-block anim">【目的】上司への週次業務報告メール
+【背景】今週は請求書確認業務を担当。3件の記入不備を発見し、
+        担当者に確認・修正依頼を完了した。
+【条件】簡潔に・箇条書き・200字以内
+【宛先】直属の上司（社内メール・敬語）</div>
+    <div class="prompt-note anim">目的・背景・条件・宛先を明示 → そのまま使えるレベルの内容が返ってくる。</div>
+  </div>
+  <div class="core-message anim" style="margin-top:16px; text-align:center; font-size:19px;">
+    AIは質問の仕方で精度が大きく変わる。これが「正しく使える」ということ。
+  </div>
+</section>
+
+<!-- ===== 28: セクション⑥ ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 06</div>
+  <h2 class="anim">ナレッジ課題<br>＋次回予告</h2>
+  <div class="section-time anim">5 min</div>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 29: ナレッジ課題 ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">ナレッジ課題</h2>
+  <div class="process-flow anim">
+    <span class="process-step">疑問が生まれる</span>
+    <span class="process-arrow">→</span>
+    <span class="process-step">先輩・上司に聞く</span>
+    <span class="process-arrow">→</span>
+    <span class="process-step">記録する</span>
+    <span class="process-arrow">→</span>
+    <span class="process-step">AIで整理する</span>
+    <span class="process-arrow">→</span>
+    <span class="process-step">資産化</span>
+  </div>
+  <div class="core-message anim" style="font-size:17px; margin:12px 0;">
+    AIは「回答」ではなく「整理」に使う。一次情報は必ず人から取る。
+  </div>
+  <div class="knowledge-cards">
+    <div class="knowledge-card anim">
+      <div class="card-number">Step 01</div>
+      <div class="card-title">疑問・質問</div>
+      <div class="card-desc">背景・状況も含めて具体的に書く</div>
+    </div>
+    <div class="knowledge-card anim">
+      <div class="card-number">Step 02</div>
+      <div class="card-title">誰に確認したか</div>
+      <div class="card-desc">名前・日時を記録する</div>
+    </div>
+    <div class="knowledge-card anim">
+      <div class="card-number">Step 03</div>
+      <div class="card-title">人からの回答</div>
+      <div class="card-desc">一次情報をそのまま記録する</div>
+    </div>
+    <div class="knowledge-card anim">
+      <div class="card-number">Step 04</div>
+      <div class="card-title">AIで整理した内容</div>
+      <div class="card-desc">結論・詳細説明・注意点・具体例</div>
+    </div>
+  </div>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-top:12px; text-align:center; letter-spacing:1px;">
+    1日1件以上 / 必ず先に人に聞く / 1質問・1テーマ / 具体的に書く
+  </p>
+</section>
+
+<!-- ===== 30: GRスタンダードプラスα紹介 ===== -->
+<section class="slide">
+  <h2 class="anim">みなさんの経験が、社内AIを育てる</h2>
+  <div style="background:var(--bg-gray); border-radius:4px; padding:20px 32px; margin-bottom:14px;" class="anim">
+    <h3 style="color:var(--blue); margin-bottom:8px; font-size:22px;">GRスタンダードプラスα</h3>
+    <p style="font-size:16px; margin-bottom:10px;">
+      社内ナレッジ＋外部一次情報（国税庁・厚労省等）＋<strong>主要ツール15の公式マニュアル</strong>を<br>
+      自動で検索・照合して回答する社内AIチャットボット
+    </p>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <span style="background:var(--blue-light); color:var(--blue); padding:3px 10px; border-radius:4px; font-size:13px; font-weight:600;">税務</span>
+      <span style="background:var(--blue-light); color:var(--blue); padding:3px 10px; border-radius:4px; font-size:13px; font-weight:600;">経理・財務</span>
+      <span style="background:var(--blue-light); color:var(--blue); padding:3px 10px; border-radius:4px; font-size:13px; font-weight:600;">労務</span>
+      <span style="background:var(--blue-light); color:var(--blue); padding:3px 10px; border-radius:4px; font-size:13px; font-weight:600;">総務</span>
+      <span style="background:var(--blue-light); color:var(--blue); padding:3px 10px; border-radius:4px; font-size:13px; font-weight:600;">社内システム</span>
+    </div>
+  </div>
+  <div style="background:var(--green-light); border-left:3px solid var(--green); border-radius:4px; padding:16px 24px; margin-bottom:14px;" class="anim">
+    <p style="font-size:17px; margin-bottom:6px;"><strong>&#x1F4A1; ナレッジ課題とのつながり</strong></p>
+    <p style="font-size:16px;">みなさんが<strong>人に聞いて得た知識・実体験</strong>は、このツールのナレッジに反映されます。<br>つまり、みなさんが情報を貯めれば貯めるほど、<strong>GRスタンダードプラスαはより賢くなる</strong>。<br>だからこそ、<strong>まず人に聞いて、正しい情報を記録してください</strong>。</p>
+  </div>
+  <div style="display:flex; gap:16px; align-items:stretch;" class="anim">
+    <div style="flex:1; background:var(--bg-gray); border-radius:4px; padding:14px 18px; text-align:center;">
+      <p style="font-size:28px; margin-bottom:4px;">&#x1F464;</p>
+      <p style="font-size:15px; font-weight:700;">まず人に聞く</p>
+      <p style="font-size:13px; color:var(--text-sub);">正しい一次情報を得る</p>
+    </div>
+    <div style="display:flex; align-items:center; font-size:20px; color:var(--text-light);">→</div>
+    <div style="flex:1; background:var(--bg-gray); border-radius:4px; padding:14px 18px; text-align:center;">
+      <p style="font-size:28px; margin-bottom:4px;">&#x1F4DD;</p>
+      <p style="font-size:15px; font-weight:700;">記録・蓄積する</p>
+      <p style="font-size:13px; color:var(--text-sub);">ナレッジ課題で資産化</p>
+    </div>
+    <div style="display:flex; align-items:center; font-size:20px; color:var(--text-light);">→</div>
+    <div style="flex:1; background:var(--blue-light); border-radius:4px; padding:14px 18px; text-align:center;">
+      <p style="font-size:28px; margin-bottom:4px;">&#x1F4A1;</p>
+      <p style="font-size:15px; font-weight:700; color:var(--blue);">AIが賢くなる</p>
+      <p style="font-size:13px; color:var(--text-sub);">GRスタンダードプラスα改善</p>
+    </div>
+  </div>
+  <div class="anim" style="margin-top:14px; text-align:center;">
+    <a href="https://udify.app/chat/apwkfP2K2aa2nzTM" target="_blank" style="display:inline-block; background:var(--blue); color:#fff; padding:10px 28px; border-radius:4px; font-size:15px; font-weight:700; text-decoration:none; letter-spacing:1px;">GRスタンダードプラスα を見てみる &#x2192;</a>
+  </div>
+</section>
+
+<!-- ===== 31: AIは進化し続ける ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">今日学んだことは「今の正解」です</h2>
+  <div class="core-message anim" style="font-size:21px; margin-bottom:24px; text-align:center;">
+    今日の内容が、半年後にはもう変わっているかもしれない
+  </div>
+  <ul class="anim" style="margin-bottom:24px;">
+    <li style="margin-bottom:12px;"><strong>AIモデルは頻繁に更新される</strong> ── 使い方・精度・できることが変わる</li>
+    <li style="margin-bottom:12px;"><strong>新しいツール・サービスが次々に登場する</strong> ── より便利な選択肢が出てくる</li>
+    <li style="margin-bottom:12px;"><strong>法律・社内ルールも変わる</strong> ── 今OKなことが将来NGになる可能性もある</li>
+  </ul>
+  <div class="core-message warning anim" style="font-size:19px;">
+    だからこそ、「ルールを暗記する」のではなく<br><strong>「なぜそのルールがあるか」を理解し、自分で考える力</strong>を身につける
+  </div>
+  <p class="anim" style="font-size:16px; color:var(--text-sub); text-align:center; margin-top:16px;">
+    学び続ける姿勢が、変化に対応できる自分をつくります
+  </p>
+</section>
+
+<!-- ===== 32: クロージング ===== -->
+<section class="slide">
+  <h2 class="anim">まとめ ── 今日のコアメッセージ</h2>
+  <ul class="closing-list">
+    <li class="anim"><span class="check">&#x25B6;</span>AIは効率化だけでなく、<strong>質と再現性</strong>を上げるツール</li>
+    <li class="anim"><span class="check">&#x25B6;</span>「使える」と「<strong>正しく使える</strong>」は違う</li>
+    <li class="anim"><span class="check">&#x25B6;</span>AIは<strong>それっぽく正しいことを言う</strong> ── 鵜呑みにしない</li>
+    <li class="anim"><span class="check">&#x25B6;</span><strong>実データは入力しない</strong>。最終判断は人が行う</li>
+    <li class="anim"><span class="check">&#x25B6;</span><strong>聞き方で精度が変わる</strong></li>
+    <li class="anim"><span class="check">&#x25B6;</span>疑問を<strong>ナレッジに変換</strong>する</li>
+  </ul>
+  <div class="next-block anim">
+    <h3>Next ── 第2回「迷わず使える。4つの場面と2つのツール」</h3>
+    <p>
+      日常業務の具体的な場面でAIを使うパターンを体験で身につけます。<br>
+      ChatGPTとGRスタンダードプラスαの使い分けも扱います。
+    </p>
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- ナビゲーション -->
+<div class="nav-bar">
+  <div class="nav-group">
+    <button id="btn-prev5" class="nav-jump" onclick="jumpSlide(-5)">&#x00AB; 5</button>
+    <button id="btn-prev" onclick="changeSlide(-1)">&#x2190; Prev</button>
+  </div>
+  <span class="slide-counter" id="slide-counter">1 / 29</span>
+  <div class="nav-group">
+    <button id="btn-next" onclick="changeSlide(1)">Next &#x2192;</button>
+    <button id="btn-next5" class="nav-jump" onclick="jumpSlide(5)">5 &#x00BB;</button>
+  </div>
+</div>
+
+<script>
+let currentSlide = 0;
+let isAnimating = false;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+
+function animateElements(slide) {
+  const anims = slide.querySelectorAll('.anim');
+  anims.forEach(el => el.classList.remove('visible'));
+  anims.forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), 100 + i * 80);
+  });
+}
+
+function resetElements(slide) {
+  slide.querySelectorAll('.anim').forEach(el => el.classList.remove('visible'));
+}
+
+function showSlide(n, direction) {
+  if (n < 0 || n >= totalSlides || isAnimating) return;
+  if (n === currentSlide) {
+    animateElements(slides[n]);
+    return;
+  }
+  isAnimating = true;
+  const dir = direction || (n > currentSlide ? 1 : -1);
+  const prev = slides[currentSlide];
+  const next = slides[n];
+
+  resetElements(prev);
+  prev.classList.remove('active');
+  prev.classList.add(dir > 0 ? 'exit-up' : 'exit-down');
+
+  next.classList.remove('exit-up', 'exit-down');
+  next.style.transform = dir > 0 ? 'translateY(20px)' : 'translateY(-20px)';
+  next.style.opacity = '0';
+  next.classList.add('active');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      next.style.transform = '';
+      next.style.opacity = '';
+      animateElements(next);
+    });
+  });
+
+  setTimeout(() => {
+    prev.classList.remove('exit-up', 'exit-down');
+    isAnimating = false;
+  }, 520);
+
+  currentSlide = n;
+  document.getElementById('slide-counter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
+  document.getElementById('btn-prev').disabled = currentSlide === 0;
+  document.getElementById('btn-next').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('btn-prev5').disabled = currentSlide === 0;
+  document.getElementById('btn-next5').disabled = currentSlide === totalSlides - 1;
+}
+
+function changeSlide(dir) {
+  showSlide(currentSlide + dir, dir);
+}
+
+function jumpSlide(offset) {
+  var target = Math.max(0, Math.min(totalSlides - 1, currentSlide + offset));
+  showSlide(target, offset > 0 ? 1 : -1);
+}
+
+function goToSlide(n) {
+  showSlide(n);
+}
+
+function togglePrompt(type) {
+  const btnBad = document.getElementById('btn-bad');
+  const btnGood = document.getElementById('btn-good');
+  const panelBad = document.getElementById('panel-bad');
+  const panelGood = document.getElementById('panel-good');
+  if (type === 'bad') {
+    btnBad.className = 'active-bad';
+    btnGood.className = '';
+    panelBad.classList.add('active');
+    panelGood.classList.remove('active');
+  } else {
+    btnGood.className = 'active-good';
+    btnBad.className = '';
+    panelGood.classList.add('active');
+    panelBad.classList.remove('active');
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    changeSlide(-1);
+  }
+});
+
+// スケーリング
+const container = document.getElementById('slide-container');
+const BASE_W = 1280;
+const BASE_H = 720;
+const NAV_H = 48;
+
+function scaleSlides() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight - NAV_H;
+  const scale = Math.min(vw / BASE_W, vh / BASE_H);
+  container.style.transform = 'scale(' + scale + ')';
+}
+
+window.addEventListener('resize', scaleSlides);
+scaleSlides();
+
+// 初期化
+slides[0].classList.add('active');
+animateElements(slides[0]);
+</script>
+
+</body>
+</html>

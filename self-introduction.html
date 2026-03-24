@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自己紹介 — 菅田 琢磨</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --blue: #006EE6;
+  --blue-dark: #0058C0;
+  --blue-light: #E6F0FF;
+  --orange: #E6731E;
+  --text: #222222;
+  --text-sub: #333333;
+  --text-light: #999999;
+  --bg: #ffffff;
+  --bg-gray: #f7f7f7;
+  --border: #d0d0d0;
+}
+
+body {
+  font-family: 'Noto Sans JP', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #000000;
+  color: #ffffff;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ── ビューポート＋コンテナ ── */
+.slide-viewport {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.slide-container {
+  width: 1280px;
+  height: 720px;
+  position: relative;
+  transform-origin: center center;
+  flex-shrink: 0;
+}
+
+/* ── スライド本体 ── */
+.slide {
+  width: 1280px;
+  height: 720px;
+  background: #000000;
+  color: #ffffff;
+  padding: 32px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+/* ── ヘッダーバー ── */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--blue);
+  text-transform: uppercase;
+}
+
+.slide-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.05em;
+}
+
+/* ── プロフィールヘッダー ── */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid rgba(0,110,230,0.4);
+  box-shadow: 0 0 20px rgba(0,110,230,0.2);
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+}
+
+.profile-info .name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-info h1 {
+  font-size: 30px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.profile-info .furigana {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 2px;
+  word-spacing: 5px;
+}
+
+.profile-info .furigana span {
+  display: inline-block;
+  text-align: justify;
+  text-align-last: justify;
+  width: 62px;
+}
+
+.profile-info .meta-line {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* ── プロフィール情報行 ── */
+.info-lines {
+  margin-top: 8px;
+}
+
+.info-line {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.8;
+}
+
+.info-icon {
+  width: 22px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.profile-info .meta-line .separator {
+  color: rgba(255,255,255,0.25);
+  margin: 0 8px;
+}
+
+.profile-info .role-tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--blue);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  height: 24px;
+}
+
+/* ── 2カラムレイアウト ── */
+.cards {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 0;
+}
+
+.card-main {
+  flex: 3;
+  background: rgba(255,255,255,0.07);
+  border-radius: 8px;
+  padding: 20px 24px;
+  border-top: 3px solid var(--blue);
+  transition: all 0.3s cubic-bezier(0,1,0.64,1);
+}
+
+.card-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,110,230,0.15);
+}
+
+.card-side {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  background: rgba(255,255,255,0.07);
+  border-radius: 8px;
+  padding: 16px 20px;
+  border-top: 3px solid var(--blue);
+  flex: 1;
+  transition: all 0.3s cubic-bezier(0,1,0.64,1);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,110,230,0.15);
+}
+
+.card-icon {
+  font-size: 14px;
+  margin-right: 6px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.card h3, .card-main h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: 0.04em;
+}
+
+.card-main .card-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 12px;
+}
+
+.achievements {
+  display: flex;
+  gap: 16px;
+}
+
+.achievement-col {
+  flex: 1;
+}
+
+.card ul, .card-main ul {
+  list-style: none;
+  padding: 0;
+}
+
+.card ul li, .card-main ul li {
+  font-size: 13px;
+  line-height: 1.8;
+  padding-left: 14px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.card ul li::before, .card-main ul li::before {
+  content: "\2022";
+  position: absolute;
+  left: 0;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+
+/* ── フッターメッセージ ── */
+.footer-message {
+  background: rgba(0,110,230,0.15);
+  border-left: 4px solid var(--blue);
+  border-radius: 0 6px 6px 0;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-top: 24px;
+}
+
+.footer-message .msg-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.footer-message p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.85);
+}
+
+.footer-message strong {
+  color: var(--blue);
+}
+
+/* ── 印刷用 ── */
+@media print {
+  @page { size: landscape; margin: 10mm; }
+  body { overflow: visible; height: auto; width: auto; background: #fff; }
+  .slide-viewport { height: auto; overflow: visible; }
+  .slide-container { transform: none !important; width: 100%; height: auto; }
+  .slide {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    padding: 5% 8%;
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .anim { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* ── アニメーション ── */
+.anim {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.anim.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<div class="slide-viewport">
+<div class="slide-container">
+<div class="slide">
+
+  <!-- ヘッダーバー -->
+  <div class="header-bar anim">
+    <span class="tag">BackofficeForce Inc.</span>
+    <span class="slide-title">Self Introduction</span>
+  </div>
+
+  <!-- プロフィールヘッダー -->
+  <div class="profile-header anim">
+    <div class="avatar"><img src="TakumaSugata.JPG" alt="菅田琢磨"></div>
+    <div class="profile-info">
+      <div class="furigana"><span class="fg-family">すがた</span> <span class="fg-given">たくま</span></div>
+      <div class="name-row">
+        <h1>菅田 琢磨</h1>
+        <span class="role-tag">AI Integrator</span>
+      </div>
+      <div class="meta-line">
+        社長室 室長<span class="separator">|</span>2020年6月入社（6年目）
+      </div>
+      <div class="info-lines">
+        <div class="info-line"><span class="info-icon">&#x1F4CD;</span>宮城県仙台市</div>
+        <div class="info-line"><span class="info-icon">&#x1F393;</span>ニューヨーク市立大学ハンター校</div>
+        <div class="info-line"><span class="info-icon">&#x1F4BC;</span>人材派遣 → 保険 → 経営コンサル → 現職</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2カラムレイアウト -->
+  <div class="cards">
+    <div class="card-main anim">
+      <div class="section-header"><span class="card-icon">&#x1F4BC;</span><h3>仕事内容</h3></div>
+      <p class="card-desc">AIやクラウドツール、ノーコードツールを組み合わせて、社内の業務課題を解決する仕組みを設計・構築しています。</p>
+      <div class="section-header"><span class="card-icon">&#x1F680;</span><h3>制作実績</h3></div>
+      <div class="achievements">
+        <div class="achievement-col">
+          <ul>
+            <li>業務マニュアル自動作成AI</li>
+            <li>Chatwork → Teams 通知自動化</li>
+            <li>社内ナレッジ検索システム</li>
+            <li>AIプロジェクト管理ダッシュボード</li>
+          </ul>
+        </div>
+        <div class="achievement-col">
+          <ul>
+            <li>人材マッチングAI</li>
+            <li>月次レポート自動作成</li>
+            <li>工数分析レポートAI</li>
+            <li>新卒向けAI研修カリキュラム制作</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card-side">
+      <div class="card anim">
+        <div class="section-header"><span class="card-icon">&#x1F3C5;</span><h3>資格</h3></div>
+        <ul>
+          <li>JDLA Deep Learning for GENERAL（G検定）</li>
+          <li>生成AIパスポート（GUGA）</li>
+        </ul>
+      </div>
+      <div class="card anim">
+        <div class="section-header"><span class="card-icon">&#x26BD;</span><h3>趣味</h3></div>
+        <ul>
+          <li>サッカー</li>
+          <li>7歳の娘（エラ）と遊ぶこと</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- フッターメッセージ -->
+  <div class="footer-message anim">
+    <span class="msg-icon">&#x1F4AC;</span>
+    <p><strong>「非効率が大キライ。だから、ムダを減らして、もっとラクに働ける環境をつくりたい。」</strong></p>
+  </div>
+
+</div>
+</div>
+</div>
+
+<script>
+// アニメーション: 順次表示
+window.addEventListener('DOMContentLoaded', () => {
+  const elems = document.querySelectorAll('.anim');
+  elems.forEach((el, i) => {
+    setTimeout(() => el.classList.add('show'), 200 + i * 250);
+  });
+});
+
+// ビューポートスケーリング
+function scaleSlide() {
+  const vp = document.querySelector('.slide-viewport');
+  const ct = document.querySelector('.slide-container');
+  const sw = vp.clientWidth / 1280;
+  const sh = vp.clientHeight / 720;
+  ct.style.transform = 'scale(' + Math.min(sw, sh) + ')';
+}
+window.addEventListener('resize', scaleSlide);
+window.addEventListener('DOMContentLoaded', scaleSlide);
+</script>
+
+</body>
+</html>

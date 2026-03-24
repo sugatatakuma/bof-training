@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BackofficeForce 研修スライド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #f5f7fa;
+    color: #1a1a2e;
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, #006EE6 0%, #0052ad 100%);
+    color: #fff;
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .header p { font-size: 15px; opacity: 0.85; }
+  .container {
+    max-width: 800px;
+    margin: -24px auto 48px;
+    padding: 0 20px;
+  }
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #006EE6;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 32px 0 12px;
+    padding-left: 4px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 12px;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+  .card a {
+    display: flex;
+    align-items: center;
+    padding: 20px 24px;
+    text-decoration: none;
+    color: inherit;
+    gap: 16px;
+  }
+  .card-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #e8f1fd;
+    color: #006EE6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .card-number.orange { background: #fef0e5; color: #E6731E; }
+  .card-number.green  { background: #e5f6ef; color: #1ea65e; }
+  .card-body { flex: 1; }
+  .card-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+  .card-desc  { font-size: 13px; color: #666; }
+  .card-arrow {
+    color: #ccc;
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+  .card:hover .card-arrow { color: #006EE6; }
+  .footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: #999;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>BackofficeForce 研修スライド</h1>
+    <p>社内研修用プレゼンテーション資料</p>
+  </div>
+  <div class="container">
+    <div class="section-title">AI研修カリキュラム</div>
+    <div class="card">
+      <a href="ai-training-01.html">
+        <div class="card-number">1</div>
+        <div class="card-body">
+          <div class="card-title">AI研修 第1回</div>
+          <div class="card-desc">AIを安全に使い、業務で成果を出すための基礎</div>
+        </div>
+        <div class="card-arrow">&#8250;</div>
+      </a>
+    </div>
+    <div class="card">
+      <a href="ai-training-02.html">
+        <div class="card-number">2</div>
+        <div class="card-body">
+          <div class="card-title">AI研修 第2回</div>
+          <div class="card-desc">迷わず使える。4つの場面と2つのツール</div>
+        </div>
+        <div class="card-arrow">&#8250;</div>
+      </a>
+    </div>
+    <div class="card">
+      <a href="ai-training-03.html">
+        <div class="card-number">3</div>
+        <div class="card-body">
+          <div class="card-title">AI研修 第3回</div>
+          <div class="card-desc">AIを業務に組み込む。知見を資産にする。</div>
+        </div>
+        <div class="card-arrow">&#8250;</div>
+      </a>
+    </div>
+
+    <div class="section-title">その他研修</div>
+    <div class="card">
+      <a href="horenso.html">
+        <div class="card-number orange">1</div>
+        <div class="card-body">
+          <div class="card-title">報連相の重要性</div>
+          <div class="card-desc">報告・連絡・相談の基本と実践</div>
+        </div>
+        <div class="card-arrow">&#8250;</div>
+      </a>
+    </div>
+    <div class="card">
+      <a href="grancers-standard.html">
+        <div class="card-number orange">2</div>
+        <div class="card-body">
+          <div class="card-title">グランサーズスタンダード ソフトパート</div>
+          <div class="card-desc">BackofficeForce の行動指針・カルチャー</div>
+        </div>
+        <div class="card-arrow">&#8250;</div>
+      </a>
+    </div>
+    <div class="card">
+      <a href="self-introduction.html">
+        <div class="card-number green">3</div>
+        <div class="card-body">
+          <div class="card-title">自己紹介 ― 菅田 琢磨</div>
+          <div class="card-desc">講師プロフィール</div>
+        </div>
+        <div class="card-arrow">&#8250;</div>
+      </a>
+    </div>
+  </div>
+  <div class="footer">&copy; BackofficeForce</div>
+</body>
+</html>

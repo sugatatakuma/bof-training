@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>報連相の重要性 ── BackofficeForce</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --blue: #006EE6;
+  --blue-dark: #0058C0;
+  --blue-light: #E6F0FF;
+  --orange: #E6731E;
+  --orange-light: #FEF1E6;
+  --black: #000000;
+  --text: #222222;
+  --text-sub: #333333;
+  --text-light: #999999;
+  --bg: #ffffff;
+  --bg-gray: #f7f7f7;
+  --border: #d0d0d0;
+  --red: #d93025;
+  --red-light: #fef2f0;
+  --green: #1a7f37;
+  --green-light: #eef9f1;
+  --dark-bg: #333333;
+}
+
+body {
+  font-family: 'Noto Sans JP', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-gray);
+  color: var(--text);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.slide-viewport {
+  width: 100vw;
+  height: calc(100vh - 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.slide-container {
+  width: 1280px;
+  height: 720px;
+  position: relative;
+  transform-origin: center center;
+  flex-shrink: 0;
+}
+
+.slide {
+  width: 1280px;
+  height: 720px;
+  background: var(--bg);
+  padding: 0 12%;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: 0; left: 0;
+  overflow: hidden;
+  display: flex;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.slide.active { opacity: 1; transform: translateY(0); pointer-events: auto; z-index: 2; }
+.slide.exit-up { opacity: 0; transform: translateY(-20px); pointer-events: none; z-index: 1; }
+.slide.exit-down { opacity: 0; transform: translateY(20px); pointer-events: none; z-index: 1; }
+.slide.bg-gray { background: var(--bg-gray); }
+
+/* ── タイトルスライド ── */
+.slide.title-slide { background: var(--black); color: var(--bg); padding: 0 12%; justify-content: center; }
+.slide.title-slide .tag { font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 32px; }
+.slide.title-slide h1 { font-size: 58px; font-weight: 900; line-height: 1.2; color: var(--bg); letter-spacing: 1px; margin-bottom: 20px; }
+.slide.title-slide .lead { font-size: 22px; font-weight: 300; color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 56px; }
+.slide.title-slide .meta { font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.35); display: flex; gap: 28px; letter-spacing: 1px; }
+
+/* ── セクション区切り ── */
+.slide.section-slide { background: var(--bg); padding: 0 12%; justify-content: center; }
+.slide.section-slide .section-number { font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; color: var(--blue); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+.slide.section-slide h2 { font-size: 54px; font-weight: 900; color: var(--black); letter-spacing: 1px; line-height: 1.2; margin-bottom: 0; }
+.slide.section-slide .section-time { font-size: 16px; font-weight: 400; color: var(--text-light); margin-top: 20px; letter-spacing: 1px; }
+.slide.section-slide .accent-line { width: 40px; height: 3px; background: var(--blue); margin-top: 28px; }
+
+/* ── テキスト共通 ── */
+.slide h2 { font-size: 32px; font-weight: 900; color: var(--black); margin-bottom: 32px; line-height: 1.4; letter-spacing: 0.5px; }
+.slide h3 { font-size: 22px; font-weight: 700; color: var(--black); margin-bottom: 12px; }
+.slide p, .slide li { font-size: 19px; line-height: 2; color: var(--text-sub); font-weight: 400; }
+.slide ul { padding-left: 20px; }
+.slide ul li { margin-bottom: 6px; }
+.slide ul li strong { color: var(--black); font-weight: 700; }
+
+/* ── コアメッセージ ── */
+.core-message { border-left: 3px solid var(--blue); padding: 20px 28px; margin: 20px 0; font-size: 21px; font-weight: 500; color: var(--black); line-height: 1.7; background: var(--bg); }
+.bg-gray .core-message { background: var(--bg-gray); }
+.core-message.warning { border-left-color: var(--red); }
+.core-message.success { border-left-color: var(--green); }
+
+/* ── ダークバナー ── */
+.dark-banner { background: var(--dark-bg); color: #fff; padding: 18px 28px; font-size: 19px; font-weight: 500; line-height: 1.7; margin-bottom: 24px; border-radius: 4px; }
+
+/* ── 定義ブロック ── */
+.definition-block { display: flex; align-items: flex-start; gap: 24px; margin: 20px 0; }
+.definition-label { background: var(--blue); color: #fff; font-size: 36px; font-weight: 900; padding: 16px 24px; border-radius: 4px; flex-shrink: 0; min-width: 110px; text-align: center; line-height: 1.3; }
+.definition-text { font-size: 17px; line-height: 1.9; color: var(--text-sub); }
+
+/* ── 人物図解 ── */
+.people-diagram { display: flex; align-items: center; justify-content: center; gap: 40px; margin: 20px 0; }
+.person { text-align: center; }
+.person-icon { width: 80px; height: 80px; border-radius: 50%; background: var(--bg-gray); display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 8px; border: 2px solid var(--border); }
+.bg-gray .person-icon { background: var(--bg); }
+.person-label { font-size: 14px; color: var(--text-sub); font-weight: 500; }
+.arrow-block { display: flex; flex-direction: column; gap: 8px; }
+.arrow { padding: 6px 28px; border-radius: 4px; font-size: 14px; font-weight: 700; text-align: center; color: #fff; min-width: 120px; }
+.arrow.blue { background: var(--blue); }
+.arrow.dark { background: var(--dark-bg); }
+
+/* ── 問題リスト ── */
+.problem-list { list-style: none; padding: 0; }
+.problem-list li { padding: 16px 0; font-size: 18px; border-bottom: 1px solid var(--bg-gray); display: flex; align-items: flex-start; gap: 14px; line-height: 1.6; }
+.problem-list li:last-child { border-bottom: none; }
+.problem-list .icon { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 4px; font-size: 14px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.problem-list .icon.check { background: var(--blue); color: #fff; }
+.problem-list .consequence { color: var(--red); font-weight: 500; display: none; margin-top: 4px; font-size: 17px; }
+.problem-list .consequence.show { display: block; }
+.problem-list .note { font-size: 14px; color: var(--text-light); display: none; margin-top: 2px; }
+.problem-list .note.show { display: block; }
+.problem-list li.clickable { cursor: pointer; }
+.problem-list li.clickable:hover { background: var(--blue-light); }
+.problem-list .click-hint { font-size: 13px; color: var(--text-light); display: inline; margin-left: 8px; }
+.problem-list .click-hint.hide { display: none; }
+
+/* ── ルールリスト ── */
+.rule-list { list-style: none; padding: 0; }
+.rule-list li { padding: 12px 0; font-size: 17px; border-bottom: 1px solid var(--bg-gray); display: flex; align-items: flex-start; gap: 14px; line-height: 1.7; transition: all 0.25s; }
+.rule-list li:last-child { border-bottom: none; }
+.rule-list li:hover { padding-left: 8px; background: var(--blue-light); }
+.rule-list .rule-icon { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 4px; background: var(--blue); color: #fff; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 3px; }
+.rule-list .rule-note { font-size: 14px; color: var(--text-light); display: block; margin-top: 2px; }
+
+/* ── クイズカード ── */
+.quiz-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px; }
+.quiz-card { background: var(--bg); border-radius: 4px; padding: 22px 24px; border-left: 3px solid var(--blue); transition: all 0.3s cubic-bezier(0,1,0.64,1); cursor: pointer; }
+.bg-gray .quiz-card { background: var(--bg); }
+.quiz-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.06); }
+.quiz-card .quiz-q { font-size: 16px; font-weight: 700; color: var(--blue); margin-bottom: 8px; line-height: 1.5; }
+.quiz-card .quiz-a { font-size: 15px; color: var(--text-sub); line-height: 1.6; }
+
+/* ── アコーディオン ── */
+.accordion-list { list-style: none; padding: 0; }
+.accordion-item { border-bottom: 1px solid var(--border); }
+.accordion-item:last-child { border-bottom: none; }
+.acc-header { display: flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 500; padding: 14px 0; cursor: pointer; transition: all 0.25s; color: var(--text); }
+.acc-header:hover { color: var(--blue); padding-left: 8px; }
+.acc-header .acc-icon { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 4px; background: var(--blue); color: #fff; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.acc-header .acc-toggle { margin-left: auto; font-size: 20px; color: var(--blue); font-weight: 700; transition: transform 0.3s; }
+.accordion-item.open .acc-toggle { transform: rotate(45deg); }
+.acc-body { display: none; padding: 0 0 14px 40px; font-size: 16px; color: var(--green); font-weight: 500; line-height: 1.7; }
+.accordion-item.open .acc-body { display: block; }
+
+/* ── お客様の声カード ── */
+.voice-cards { display: flex; flex-direction: column; gap: 12px; }
+.voice-card { display: flex; align-items: flex-start; gap: 16px; }
+.voice-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-gray); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; border: 2px solid var(--border); }
+.bg-gray .voice-avatar { background: var(--bg); }
+.voice-bubble { flex: 1; padding: 14px 18px; border-radius: 6px; font-size: 16px; line-height: 1.7; }
+.voice-bubble.negative { background: var(--red-light); color: var(--text); border-left: 3px solid var(--red); }
+.voice-bubble.positive { background: var(--blue-light); color: var(--text); border-left: 3px solid var(--blue); }
+
+/* ── チャットログ ── */
+.chat-log { display: flex; flex-direction: column; gap: 6px; margin: 6px 0; }
+.chat-msg { padding: 8px 16px; border-radius: 8px; font-size: 14px; line-height: 1.6; max-width: 82%; }
+.chat-msg.left { background: var(--bg-gray); align-self: flex-start; border-left: 3px solid var(--blue); }
+.chat-msg.right { background: var(--blue-light); align-self: flex-end; border-right: 3px solid var(--blue-dark); text-align: right; }
+.bg-gray .chat-msg.left { background: var(--bg); }
+.chat-msg .chat-name { font-size: 11px; font-weight: 700; color: var(--blue); display: inline; }
+.chat-msg .chat-time { font-size: 10px; color: var(--text-light); margin-left: 8px; }
+.chat-msg .chat-note { font-size: 12px; color: var(--blue); font-weight: 600; display: block; margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(0,110,230,0.15); }
+
+/* ── データテーブル ── */
+.data-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 17px; }
+.data-table th { background: var(--blue); color: #fff; padding: 12px 16px; text-align: left; font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+.data-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); line-height: 1.6; color: var(--text-sub); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--blue-light); }
+.data-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+/* ── 事例テーブル ── */
+.case-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.case-table th { padding: 10px 14px; text-align: left; font-weight: 700; font-size: 13px; letter-spacing: 1px; color: #fff; }
+.case-table th.col-case { background: var(--blue); }
+.case-table th.col-point { background: var(--red); }
+.case-table td { padding: 14px; border-bottom: 1px solid var(--border); line-height: 1.6; vertical-align: top; }
+.case-table tr:last-child td { border-bottom: none; }
+.case-row-label .phase { background: var(--dark-bg); color: #fff; padding: 4px 12px; font-size: 12px; font-weight: 700; border-radius: 3px; display: inline-block; margin-bottom: 8px; }
+
+/* ── 2カラム ── */
+.two-columns { display: flex; gap: 20px; margin-top: 12px; }
+.two-columns .column { flex: 1; background: var(--bg-gray); border-radius: 4px; padding: 36px; text-align: center; transition: all 0.3s cubic-bezier(0,1,0.64,1); }
+.two-columns .column:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.06); }
+.two-columns .column .icon { font-size: 36px; margin-bottom: 12px; }
+.bg-gray .two-columns .column { background: var(--bg); }
+
+/* ── クロージングリスト ── */
+.closing-list { list-style: none; padding: 0; }
+.closing-list li { padding: 14px 0 14px 4px; font-size: 19px; border-bottom: 1px solid var(--bg-gray); display: flex; align-items: flex-start; gap: 14px; line-height: 1.6; transition: all 0.25s; }
+.closing-list li:last-child { border-bottom: none; }
+.closing-list li:hover { padding-left: 12px; background: var(--blue-light); }
+.closing-list li .check { color: var(--blue); font-weight: 700; flex-shrink: 0; margin-top: 3px; font-size: 14px; }
+
+/* ── 目次 ── */
+.toc-list { list-style: none; padding: 0; }
+.toc-list li { padding: 18px 0; border-bottom: 1px solid var(--bg-gray); cursor: pointer; transition: all 0.3s; font-size: 20px; font-weight: 500; display: flex; align-items: center; gap: 24px; color: var(--text); }
+.toc-list li:last-child { border-bottom: none; }
+.toc-list li:hover { padding-left: 12px; color: var(--blue); }
+.toc-list li .toc-number { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 14px; color: var(--text-light); width: 24px; flex-shrink: 0; letter-spacing: 1px; }
+.toc-list li:hover .toc-number { color: var(--blue); }
+
+/* ── タイムラインカード ── */
+.timeline { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 8px; }
+.timeline-card { background: var(--bg-gray); border-radius: 4px; padding: 18px; border-top: 3px solid var(--blue); transition: all 0.3s cubic-bezier(0,1,0.64,1); }
+.bg-gray .timeline-card { background: var(--bg); }
+.timeline-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+.timeline-card .tl-number { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; color: var(--blue); letter-spacing: 1px; margin-bottom: 4px; }
+.timeline-card .tl-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 2px; line-height: 1.4; }
+.timeline-card .tl-desc { font-size: 13px; color: var(--text-sub); line-height: 1.5; }
+
+/* ── ナビゲーション ── */
+.nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 48px; background: var(--bg); border-top: 1px solid #e8e8e8; display: flex; align-items: center; justify-content: center; z-index: 100; }
+.nav-group { display: flex; align-items: center; gap: 2px; }
+.nav-bar button { background: none; border: 1px solid transparent; border-radius: 4px; color: var(--text-light); padding: 6px 16px; font-size: 13px; cursor: pointer; font-family: 'Inter', 'Noto Sans JP', sans-serif; font-weight: 600; letter-spacing: 0.5px; transition: all 0.2s; line-height: 1; }
+.nav-bar button:hover { color: var(--blue); background: var(--blue-light); border-color: var(--blue-light); }
+.nav-bar button:disabled { opacity: 0.15; cursor: default; background: none; border-color: transparent; }
+.nav-bar button.nav-jump { font-size: 11px; padding: 5px 10px; color: var(--text-light); opacity: 0.6; }
+.nav-bar button.nav-jump:hover { opacity: 1; color: var(--blue); background: var(--blue-light); }
+.nav-bar button.nav-jump:disabled { opacity: 0.15; }
+.slide-counter { color: var(--text); font-size: 12px; font-family: 'Inter', sans-serif; font-weight: 600; min-width: 72px; text-align: center; letter-spacing: 1px; margin: 0 20px; }
+
+/* ── アニメーション ── */
+.anim { opacity: 0; transform: translateY(16px); transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1); }
+.anim.visible { opacity: 1; transform: translateY(0); }
+
+/* ── 印刷用 ── */
+@media print {
+  @page { size: landscape; margin: 0; }
+  body { overflow: visible; height: auto; width: auto; }
+  .slide-viewport { height: auto; overflow: visible; }
+  .slide-container { transform: none !important; width: 100%; height: auto; position: relative; }
+  .nav-bar { display: none !important; }
+  .slide, .slide.active, .slide.exit-up, .slide.exit-down {
+    position: relative !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    z-index: auto !important;
+    display: flex !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    page-break-after: always;
+    break-after: page;
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .slide:last-child { page-break-after: avoid; }
+  .anim, .anim.visible { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="slide-viewport">
+<div class="slide-container" id="slide-container">
+
+<!-- ===== 01: タイトル ===== -->
+<section class="slide title-slide">
+  <div class="tag anim">BackofficeForce Inc.</div>
+  <h1 class="anim">報連相の重要性</h1>
+  <div class="lead anim">正しい報連相で、信頼と成果を生み出す。</div>
+  <div class="meta anim">
+    <span>社内研修</span>
+    <span>BackofficeForce</span>
+  </div>
+</section>
+
+<!-- ===== 02: 目次 ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">Agenda</h2>
+  <ul class="toc-list">
+    <li class="anim" onclick="goToSlide(2)"><span class="toc-number">01</span>報連相ってなに？</li>
+    <li class="anim" onclick="goToSlide(5)"><span class="toc-number">02</span>報告・連絡・相談を知る</li>
+    <li class="anim" onclick="goToSlide(12)"><span class="toc-number">03</span>報連相ができないとどうなる？</li>
+    <li class="anim" onclick="goToSlide(18)"><span class="toc-number">04</span>報連相のルール</li>
+    <li class="anim" onclick="goToSlide(23)"><span class="toc-number">05</span>お客様の声・事例</li>
+    <li class="anim" onclick="goToSlide(28)"><span class="toc-number">06</span>まとめ</li>
+  </ul>
+</section>
+
+<!-- ===== 03: SECTION 01 ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 01</div>
+  <h2 class="anim">報連相って<br>なに？</h2>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 04: 報連相の重要性（リライト版） ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">報連相の重要性</h2>
+  <div class="dark-banner anim">仕事は "チームプレー"。だから、<strong>情報共有がすべての土台</strong>になります。</div>
+  <ul class="problem-list">
+    <li class="anim"><span class="icon check">&#x2713;</span><div>どんな仕事も、必ず<strong>誰かと一緒に</strong>進めている</div></li>
+    <li class="anim"><span class="icon check">&#x2713;</span><div>上司やお客様は、あなたの状況を<strong>"見える化" してほしい</strong>と思っている</div></li>
+    <li class="anim"><span class="icon check">&#x2713;</span><div><strong>正確でスピーディな共有</strong>が、トラブルを未然に防ぐ</div></li>
+  </ul>
+  <div class="core-message anim" style="font-size:17px; padding:14px 24px;">報連相は、社内にも社外にも効く<strong>"最強のコミュニケーション術"</strong>です。<br>お客様の安心感・満足度アップにもつながります。</div>
+</section>
+
+<!-- ===== 05: クイズ ===== -->
+<section class="slide">
+  <h2 class="anim">報連相チェック</h2>
+  <p class="anim" style="margin-bottom:12px; font-size:16px; color:var(--text-light);">まずはクイズで考えてみましょう。カードをクリックすると答えが表示されます。</p>
+  <div class="quiz-cards">
+    <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'">
+      <div class="quiz-q">Q1. 「報告」はいつすべき？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; 指示された仕事が<strong>終わったとき、悪いことが起きたとき、変更があったとき</strong></div>
+    </div>
+    <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'">
+      <div class="quiz-q">Q2. 「連絡」と「報告」の違いは？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; 報告 = <strong>「やりました」</strong>を伝えること<br>連絡 = <strong>「変わりました」</strong>を伝えること</div>
+    </div>
+    <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'">
+      <div class="quiz-q">Q3. 順調なときも報連相は必要？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; <strong>はい！</strong> 上司を安心させ、信頼につながります</div>
+    </div>
+    <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'">
+      <div class="quiz-q">Q4. 報連相すべきか迷ったら？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; <strong>迷ったらGO！</strong> とりあえず伝える！</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 06: SECTION 02 ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 02</div>
+  <h2 class="anim">報告・連絡・相談<br>を知る</h2>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 07: 報告とは ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">報告とは</h2>
+  <div class="dark-banner anim">指示された仕事の<strong>結果や経過</strong>を、指示した人に伝えること。</div>
+  <div class="definition-block anim">
+    <div class="definition-label">報告</div>
+    <div class="definition-text">報告は<strong>"過去の事実"</strong>を共有すること。<br>上司やお客様から頼まれた仕事の進み具合、完了報告、トラブル報告などが該当します。<br>会議の議事録も報告の一種です。</div>
+  </div>
+  <div class="people-diagram anim">
+    <div class="person"><div class="person-icon">&#x1F469;</div><div class="person-label">指示者（上司）</div></div>
+    <div class="arrow-block">
+      <div class="arrow dark">指示・命令 &#x2192;</div>
+      <div class="arrow blue">&#x2190; 報告</div>
+    </div>
+    <div class="person"><div class="person-icon">&#x1F468;</div><div class="person-label">あなた</div></div>
+  </div>
+</section>
+
+<!-- ===== 08: 報告がないと...（上司目線を統合） ===== -->
+<section class="slide">
+  <h2 class="anim">報告がないと・・・</h2>
+  <div class="core-message anim" style="font-size:16px; padding:12px 24px; margin-top:0; margin-bottom:16px;">上司にとって報告は、次の指示や判断を下すための<strong>"生命線"</strong>です。</div>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-bottom:8px;">それぞれどうなるか考えてみよう。クリックで答えが表示されます。</p>
+  <ul class="problem-list">
+    <li class="anim clickable" onclick="this.querySelectorAll('.consequence,.note').forEach(e=>e.classList.add('show'));this.querySelector('.click-hint').classList.add('hide');">
+      <span class="icon check">&#x2713;</span>
+      <div>進捗を報告していない<span class="click-hint">&#x1F449; クリックで表示</span><span class="consequence">&#x2192; 上司が不安になり、わざわざ確認する手間が発生</span></div>
+    </li>
+    <li class="anim clickable" onclick="this.querySelectorAll('.consequence,.note').forEach(e=>e.classList.add('show'));this.querySelector('.click-hint').classList.add('hide');">
+      <span class="icon check">&#x2713;</span>
+      <div>クレームを報告していない<span class="click-hint">&#x1F449; クリックで表示</span><span class="consequence">&#x2192; 傷口が広がり、被害を最小限に抑えられない</span><span class="note">※報告しないうちは部下の責任、報告したら上司の責任</span></div>
+    </li>
+    <li class="anim clickable" onclick="this.querySelectorAll('.consequence,.note').forEach(e=>e.classList.add('show'));this.querySelector('.click-hint').classList.add('hide');">
+      <span class="icon check">&#x2713;</span>
+      <div>変更点を報告していない<span class="click-hint">&#x1F449; クリックで表示</span><span class="consequence">&#x2192; いざという時、上司がフォローできない</span></div>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== 09: 連絡とは ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">連絡とは</h2>
+  <div class="dark-banner anim">知った情報や<strong>変化</strong>を、関係者に正確に伝えること。</div>
+  <div class="definition-block anim">
+    <div class="definition-label">連絡</div>
+    <div class="definition-text">連絡は<strong>"変化があった情報"</strong>を共有すること。<br>日程変更、手順変更、ルール変更など、みんなに影響する情報をタイムリーに届けましょう。<br>報告と違い、<strong>上下関係に関わらず誰にでも</strong>行います。</div>
+  </div>
+  <div class="people-diagram anim">
+    <div class="person"><div class="person-icon">&#x1F469;</div><div class="person-label">上司</div></div>
+    <div class="arrow-block"><div class="arrow blue">&#x2190; 連絡</div></div>
+    <div class="person"><div class="person-icon">&#x1F468;</div><div class="person-label">あなた</div></div>
+    <div class="arrow-block"><div class="arrow blue">連絡 &#x2192;</div></div>
+    <div class="person"><div class="person-icon">&#x1F469;</div><div class="person-label">同僚</div></div>
+  </div>
+</section>
+
+<!-- ===== 10: 連絡がないと...（上司目線を統合） ===== -->
+<section class="slide">
+  <h2 class="anim">連絡がないと・・・</h2>
+  <div class="core-message anim" style="font-size:16px; padding:12px 24px; margin-top:0; margin-bottom:16px;">連絡は、チームの情報を<strong>常に最新に保つ</strong>ための手段です。</div>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-bottom:8px;">それぞれどうなるか考えてみよう。クリックで答えが表示されます。</p>
+  <ul class="problem-list">
+    <li class="anim clickable" onclick="this.querySelectorAll('.consequence,.note').forEach(e=>e.classList.add('show'));this.querySelector('.click-hint').classList.add('hide');">
+      <span class="icon check">&#x2713;</span>
+      <div>打合せ時間を当日になって連絡した<span class="click-hint">&#x1F449; クリックで表示</span><span class="consequence">&#x2192; 相手がタスクをコントロールできない</span></div>
+    </li>
+    <li class="anim clickable" onclick="this.querySelectorAll('.consequence,.note').forEach(e=>e.classList.add('show'));this.querySelector('.click-hint').classList.add('hide');">
+      <span class="icon check">&#x2713;</span>
+      <div>遅刻するのに事前連絡をしていない<span class="click-hint">&#x1F449; クリックで表示</span><span class="consequence">&#x2192; 不安にさせる、相手の時間を奪う</span></div>
+    </li>
+    <li class="anim clickable" onclick="this.querySelectorAll('.consequence,.note').forEach(e=>e.classList.add('show'));this.querySelector('.click-hint').classList.add('hide');">
+      <span class="icon check">&#x2713;</span>
+      <div>プロジェクトの変更点を連絡していない<span class="click-hint">&#x1F449; クリックで表示</span><span class="consequence">&#x2192; ズレが生じ、後々やり直しが発生</span></div>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== 11: 相談とは ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">相談とは</h2>
+  <div class="dark-banner anim">困ったこと・迷ったことを経験者に話して、<strong>解決の糸口を見つける</strong>こと。</div>
+  <div class="definition-block anim">
+    <div class="definition-label">相談</div>
+    <div class="definition-text">相談は、困ったことを<strong>解決するため</strong>に助けを求めること。<br>ミスやクレーム、納期遅れなどのトラブルを上司に共有し、早期解決を目指します。<br><strong>一人で抱え込まず</strong>、周りの力を借りましょう。</div>
+  </div>
+  <div class="people-diagram anim">
+    <div class="person"><div class="person-icon">&#x1F469;</div><div class="person-label">上司</div></div>
+    <div class="arrow-block"><div class="arrow blue">&#x2190; 相談</div></div>
+    <div class="person"><div class="person-icon">&#x1F468;</div><div class="person-label">あなた</div></div>
+    <div class="arrow-block"><div class="arrow blue">相談 &#x2192;</div></div>
+    <div class="person"><div class="person-icon">&#x1F469;</div><div class="person-label">同僚</div></div>
+  </div>
+</section>
+
+<!-- ===== 12: 相談がないと...（上司目線を統合） ===== -->
+<section class="slide">
+  <h2 class="anim">相談がないと・・・</h2>
+  <div class="core-message anim" style="font-size:16px; padding:12px 24px; margin-top:0; margin-bottom:16px;">上司にとって相談は、あなたを<strong>サポートするチャンス</strong>です。遠慮は不要。</div>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-bottom:8px;">それぞれどうなるか考えてみよう。クリックで答えが表示されます。</p>
+  <ul class="problem-list">
+    <li class="anim clickable" onclick="this.querySelectorAll('.consequence,.note').forEach(e=>e.classList.add('show'));this.querySelector('.click-hint').classList.add('hide');">
+      <span class="icon check">&#x2713;</span>
+      <div>分からないまま勝手に進めた<span class="click-hint">&#x1F449; クリックで表示</span><span class="consequence">&#x2192; 方向違いで全部やり直し…</span></div>
+    </li>
+    <li class="anim clickable" onclick="this.querySelectorAll('.consequence,.note').forEach(e=>e.classList.add('show'));this.querySelector('.click-hint').classList.add('hide');">
+      <span class="icon check">&#x2713;</span>
+      <div>一人で複数人のプロジェクトを進めた<span class="click-hint">&#x1F449; クリックで表示</span><span class="consequence">&#x2192; 視点が偏り、クオリティが低下</span></div>
+    </li>
+    <li class="anim clickable" onclick="this.querySelectorAll('.consequence,.note').forEach(e=>e.classList.add('show'));this.querySelector('.click-hint').classList.add('hide');">
+      <span class="icon check">&#x2713;</span>
+      <div>目標未達が見えていたのに相談しなかった<span class="click-hint">&#x1F449; クリックで表示</span><span class="consequence">&#x2192; 上司の責任問題にまで発展</span></div>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== 13: SECTION 03 ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 03</div>
+  <h2 class="anim">報連相ができないと<br>どうなる？</h2>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 14: 報連相ができていないと（2カラム版） ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">報連相がきちんとできていないと…</h2>
+  <p class="anim" style="font-size:18px; margin-bottom:16px;">チームや会社にとって様々な<strong style="color:var(--red);">損失</strong>が生じます。</p>
+  <div class="two-columns">
+    <div class="column anim">
+      <div class="icon" style="color:var(--red);">&#x1F4C9;</div>
+      <h3 style="color:var(--red); font-size:22px;">個人評価の低下</h3>
+      <p style="font-size:16px; line-height:1.6;">「仕事はできるのに報連相ができない」<br>だけで信頼を失うことがあります</p>
+    </div>
+    <div class="column anim">
+      <div class="icon" style="color:var(--red);">&#x1F4C9;</div>
+      <h3 style="color:var(--red); font-size:22px;">チーム全体の仕事が止まる</h3>
+      <p style="font-size:16px; line-height:1.6;">情報が共有されないと<br>チーム全体の動きが止まります</p>
+    </div>
+  </div>
+  <div class="core-message warning anim" style="font-size:17px; padding:14px 24px; margin-top:16px;">報連相は<strong>"できて当たり前"</strong>。できないとそれだけでマイナス評価になります。</div>
+</section>
+
+<!-- ===== 15: お客様のネガティブな声 ===== -->
+<section class="slide">
+  <h2 class="anim">お客様からいただいたネガティブな「声」</h2>
+  <div class="voice-cards">
+    <div class="voice-card anim">
+      <div class="voice-avatar">&#x1F464;</div>
+      <div class="voice-bubble negative">依頼はしたものの、<strong>イメージと違う成果物が提出された</strong>ため、イメージとズレないように、もっと早めに相談してもらいたかった</div>
+    </div>
+    <div class="voice-card anim">
+      <div class="voice-avatar">&#x1F464;</div>
+      <div class="voice-bubble negative">対応が遅いのは最悪許せるが、せめて<strong>進捗報告が欲しい</strong></div>
+    </div>
+    <div class="voice-card anim">
+      <div class="voice-avatar">&#x1F464;</div>
+      <div class="voice-bubble negative">レスは早いが、進捗がわからない時があり、<strong>「どのくらいかかります」とか連絡をくれると嬉しい</strong></div>
+    </div>
+    <div class="voice-card anim">
+      <div class="voice-avatar">&#x1F464;</div>
+      <div class="voice-bubble negative">しばらく未回答で「この件どうなっていますか？」と聞かないと状況がわからず、<strong>タスクを頭から離せない</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 16: あるあるチェック（アコーディオン） ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">報連相ができない理由 ── あるあるチェック</h2>
+  <p class="anim" style="font-size:16px; color:var(--text-light); margin-bottom:12px;">心当たりはありませんか？ クリックすると対処法が表示されます。</p>
+  <ul class="accordion-list anim">
+    <li class="accordion-item">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+        <span class="acc-icon">&#x2713;</span>
+        「わざわざ言う必要ないかな」と自己判断してしまう
+        <span class="acc-toggle">+</span>
+      </div>
+      <div class="acc-body">&#x2192; あなたが "不要" と思っても、上司にとっては重要な情報かも。判断するのは受け手です！</div>
+    </li>
+    <li class="accordion-item">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+        <span class="acc-icon">&#x2713;</span>
+        タイミングを逃して後回しにしてしまう
+        <span class="acc-toggle">+</span>
+      </div>
+      <div class="acc-body">&#x2192; 遅れてでも伝える方が、伝えないよりずっと良い。「遅くなりましたが」の一言を添えましょう。</div>
+    </li>
+    <li class="accordion-item">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+        <span class="acc-icon">&#x2713;</span>
+        都合の悪いことは言いたくない心理がある
+        <span class="acc-toggle">+</span>
+      </div>
+      <div class="acc-body">&#x2192; 悪い報告こそ早く！ 早めに伝えれば上司が一緒にリカバリーしてくれます。</div>
+    </li>
+    <li class="accordion-item">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+        <span class="acc-icon">&#x2713;</span>
+        自分のやり方を通したい気持ちがある
+        <span class="acc-toggle">+</span>
+      </div>
+      <div class="acc-body">&#x2192; 相談した上で自分の案を通すのはOK。相談なしに突き進むのがNGです。</div>
+    </li>
+    <li class="accordion-item">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+        <span class="acc-icon">&#x2713;</span>
+        「忙しそうだから後にしよう」と遠慮してしまう
+        <span class="acc-toggle">+</span>
+      </div>
+      <div class="acc-body">&#x2192; 後回しにするほど言いづらくなります。「5分だけお時間いいですか？」の一言で大丈夫！</div>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== 17: 仕事が順調でも報連相は必要か？ ===== -->
+<section class="slide">
+  <h2 class="anim">仕事が順調でも報連相は必要？</h2>
+  <div class="dark-banner anim" style="font-size:24px; font-weight:700; text-align:center;">答え：もちろん必要です！</div>
+  <ul class="problem-list">
+    <li class="anim">
+      <span class="icon check">&#x2713;</span>
+      <div style="font-size:20px;">上司は部下の仕事の<strong>最終的な責任を負っている</strong>。だから状況を知りたい</div>
+    </li>
+    <li class="anim">
+      <span class="icon check">&#x2713;</span>
+      <div style="font-size:20px;">途中経過を把握できれば、必要に応じて<strong>軌道修正</strong>ができる</div>
+    </li>
+    <li class="anim">
+      <span class="icon check">&#x2713;</span>
+      <div style="font-size:20px;">「順調です」の一言が、上司を<strong>安心させ、信頼</strong>につながる</div>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== 18: 部下目線のメリット ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">報連相すると、あなた自身が楽になる</h2>
+  <div class="two-columns" style="margin-top:20px;">
+    <div class="column anim">
+      <div class="icon">&#x1F91D;</div>
+      <h3 style="font-size:20px;">一人で抱え込まない</h3>
+      <p style="font-size:17px; line-height:1.6;">共有するだけで心が軽くなる。<br>仲間が味方になってくれます。</p>
+    </div>
+    <div class="column anim">
+      <div class="icon">&#x1F4A1;</div>
+      <h3 style="font-size:20px;">分からないことを聞ける</h3>
+      <p style="font-size:17px; line-height:1.6;">相談すれば解決が早い。<br>成長スピードも上がります。</p>
+    </div>
+    <div class="column anim">
+      <div class="icon">&#x1F6E1;</div>
+      <h3 style="font-size:20px;">トラブルも怖くない</h3>
+      <p style="font-size:17px; line-height:1.6;">一緒に対応してくれる仲間がいる。<br>報連相はあなたを守る盾です。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 19: SECTION 04 ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 04</div>
+  <h2 class="anim">報連相の<br>ルール</h2>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 20: 報告のルール（3大ルール） ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">報告のルール</h2>
+  <ul class="rule-list">
+    <li class="anim" style="padding:16px 0;">
+      <span class="rule-icon">1</span>
+      <div style="font-size:19px;"><strong>結論から話す</strong>。次に経過・状況・原因<span class="rule-note">「結論は○○です。理由は～」の順番が鉄則</span></div>
+    </li>
+    <li class="anim" style="padding:16px 0;">
+      <span class="rule-icon">2</span>
+      <div style="font-size:19px;"><strong>悪い報告こそ早く</strong><span class="rule-note">遅れるほど状況は悪化します。早めに伝えれば上司がフォローできます</span></div>
+    </li>
+    <li class="anim" style="padding:16px 0;">
+      <span class="rule-icon">3</span>
+      <div style="font-size:19px;"><strong>事実と意見を区別する</strong>。まず事実（数値）→ 次に意見<span class="rule-note">混ざっていると、受け手が正しい判断をできません</span></div>
+    </li>
+  </ul>
+  <div class="core-message anim" style="font-size:16px; padding:12px 24px;">簡単な報告は<strong>3分以内</strong>が目安。要点を絞って簡潔に。</div>
+</section>
+
+<!-- ===== 21: 報告のタイミング ===== -->
+<section class="slide">
+  <h2 class="anim">報告の6つのタイミング</h2>
+  <p class="anim" style="font-size:16px; color:var(--text-light); margin-bottom:8px;">「いつ報告すればいいの？」と迷ったら、この6つを思い出してください。</p>
+  <div class="timeline anim">
+    <div class="timeline-card">
+      <div class="tl-number">01</div>
+      <div class="tl-title">仕事が終わったとき</div>
+      <div class="tl-desc">完了報告は基本中の基本</div>
+    </div>
+    <div class="timeline-card">
+      <div class="tl-number">02</div>
+      <div class="tl-title">長期タスクの中間報告</div>
+      <div class="tl-desc">進捗を定期的に共有</div>
+    </div>
+    <div class="timeline-card">
+      <div class="tl-number">03</div>
+      <div class="tl-title">進め方に変更が必要なとき</div>
+      <div class="tl-desc">方向転換は早めに相談</div>
+    </div>
+    <div class="timeline-card">
+      <div class="tl-number">04</div>
+      <div class="tl-title">新しい情報を入手したとき</div>
+      <div class="tl-desc">判断に影響する情報は即共有</div>
+    </div>
+    <div class="timeline-card">
+      <div class="tl-number">05</div>
+      <div class="tl-title">改善方法を見つけたとき</div>
+      <div class="tl-desc">良いアイデアも立派な報告</div>
+    </div>
+    <div class="timeline-card">
+      <div class="tl-number">06</div>
+      <div class="tl-title">ミスをしたとき</div>
+      <div class="tl-desc">隠さず、すぐに上司へ</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 22: 連絡のルール ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">連絡のルール</h2>
+  <ul class="rule-list" style="margin-top:16px;">
+    <li class="anim" style="padding:20px 0;">
+      <span class="rule-icon">1</span>
+      <div style="font-size:20px;"><strong>相手に伝わった時点で完了</strong><span class="rule-note">送っただけでは不十分。重要なメール・文書は「見ていただけましたか？」と確認しましょう</span></div>
+    </li>
+    <li class="anim" style="padding:20px 0;">
+      <span class="rule-icon">2</span>
+      <div style="font-size:20px;">省略せず、<strong>抜け漏れなく伝える</strong><span class="rule-note">「これくらいわかるでしょ」は禁物。相手の立場で情報を整理して伝えましょう</span></div>
+    </li>
+    <li class="anim" style="padding:20px 0;">
+      <span class="rule-icon">3</span>
+      <div style="font-size:20px;">内容だけでなく、伝える<strong>「人」の抜け漏れも確認</strong><span class="rule-note">「この情報、あの人にも必要かも？」と一度立ち止まって考えましょう</span></div>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== 23: 相談のルール（5→3に圧縮） ===== -->
+<section class="slide">
+  <h2 class="anim">相談のルール</h2>
+  <ul class="rule-list" style="margin-top:16px;">
+    <li class="anim" style="padding:20px 0;">
+      <span class="rule-icon">1</span>
+      <div style="font-size:20px;">まず<strong>指示を出した人に相談する</strong><span class="rule-note">仕事の目的や欲しい結果が明確なので、一番的確なアドバイスがもらえます</span></div>
+    </li>
+    <li class="anim" style="padding:20px 0;">
+      <span class="rule-icon">2</span>
+      <div style="font-size:20px;">相談前に<strong>内容を整理する</strong>：やったこと ＋ 困っていること ＋ 自分の案<span class="rule-note">資料や現物を持っていくと伝わりやすい。案が浮かばない時は「案がないのですが」と正直に</span></div>
+    </li>
+    <li class="anim" style="padding:20px 0;">
+      <span class="rule-icon">3</span>
+      <div style="font-size:20px;"><strong>ミス・トラブルは即相談</strong><span class="rule-note">早ければ早いほどダメージは小さくなります。一人で解決しようとしないで</span></div>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== 24: SECTION 05 ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 05</div>
+  <h2 class="anim">お客様の声<br>事例紹介</h2>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 25: お客様のポジティブな声 ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">お客様からいただいたポジティブな「声」</h2>
+  <div class="voice-cards">
+    <div class="voice-card anim">
+      <div class="voice-avatar">&#x1F464;</div>
+      <div class="voice-bubble positive">税務等の分からない事があれば会社に<strong>確認して報告してもらえる</strong>のでありがたい</div>
+    </div>
+    <div class="voice-card anim">
+      <div class="voice-avatar">&#x1F464;</div>
+      <div class="voice-bubble positive">疑問・質問あれば、<strong>直ぐに連絡をくれる</strong>ので、安心感がある</div>
+    </div>
+    <div class="voice-card anim">
+      <div class="voice-avatar">&#x1F464;</div>
+      <div class="voice-bubble positive">タスク完了後に必ず<strong>報告をくれる</strong>ので、安心感がある</div>
+    </div>
+    <div class="voice-card anim">
+      <div class="voice-avatar">&#x1F464;</div>
+      <div class="voice-bubble positive">未消化に関して<strong>定期的に連絡</strong>をくれるので、業務依頼がしやすい</div>
+    </div>
+  </div>
+  <div class="core-message success anim" style="font-size:16px; padding:10px 24px; margin-top:8px;">報連相の徹底が「安心感」「信頼」「また依頼したい」につながっています。</div>
+</section>
+
+<!-- ===== 26: 最上級の報連相：事例概要 ===== -->
+<section class="slide">
+  <h2 class="anim">最上級の報連相：事例</h2>
+  <div class="dark-banner anim">「報連相」とセットで<strong>「スケジュールをコントロールすること」</strong>が重要。</div>
+  <div style="display:flex; gap:20px;">
+    <div style="flex:1;" class="anim">
+      <table class="case-table" style="width:100%;">
+        <tr><th class="col-case">お客様対応事例（BOFメンバー）</th></tr>
+        <tr><td>
+          <div><span class="phase" style="background:var(--dark-bg); color:#fff; padding:4px 12px; font-size:12px; font-weight:700; border-radius:3px; display:inline-block; margin-bottom:8px;">作業日前</span></div>
+          <ul style="font-size:14px; line-height:1.7; padding-left:18px;">
+            <li>事前に<strong style="color:var(--red);">作業スケジュール</strong>をお客様と擦合せ</li>
+            <li>当日は<strong style="color:var(--red);">質問があるかもしれない</strong>と事前連絡</li>
+          </ul>
+          <div style="margin-top:12px;"><span class="phase" style="background:var(--dark-bg); color:#fff; padding:4px 12px; font-size:12px; font-weight:700; border-radius:3px; display:inline-block; margin-bottom:8px;">作業当日</span></div>
+          <ul style="font-size:14px; line-height:1.7; padding-left:18px;">
+            <li>不明点は<strong style="color:var(--red);">ためらわずに質問</strong></li>
+            <li><strong style="color:var(--red);">「重ねてのご質問失礼します」</strong>のクッション言葉</li>
+            <li>作業終了時に<strong style="color:var(--red);">実績工数と成果物を報告</strong></li>
+          </ul>
+        </td></tr>
+      </table>
+    </div>
+    <div style="flex:1;" class="anim">
+      <table class="case-table" style="width:100%;">
+        <tr><th class="col-point">ポイント！</th></tr>
+        <tr><td>
+          <ul class="rule-list" style="font-size:15px;">
+            <li style="padding:8px 0;"><span class="rule-icon" style="width:20px; height:20px; font-size:10px;">&#x2713;</span><div>「作業スケジュール」を事前に握る</div></li>
+            <li style="padding:8px 0;"><span class="rule-icon" style="width:20px; height:20px; font-size:10px;">&#x2713;</span><div>質問をたくさんする可能性があることを事前に伝える</div></li>
+            <li style="padding:8px 0;"><span class="rule-icon" style="width:20px; height:20px; font-size:10px;">&#x2713;</span><div>クッション言葉で気遣いを見せる</div></li>
+            <li style="padding:8px 0;"><span class="rule-icon" style="width:20px; height:20px; font-size:10px;">&#x2713;</span><div>作業終了時に実績を必ず報告</div></li>
+          </ul>
+        </td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 27: チャットログ ハイライト ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim" style="margin-bottom:4px;">最上級の報連相 ── 2時間22回のラリー</h2>
+  <p class="anim" style="font-size:13px; color:var(--text-light); margin-bottom:4px;">リモートでも「隣にいるんじゃないか？」という距離感を生んだチャットログ（抜粋）</p>
+  <div class="chat-log anim">
+    <div class="chat-msg left">
+      <span class="chat-name">担当者</span><span class="chat-time">1:54 PM</span><br>
+      <strong style="color:var(--red);">本日15時頃から作業予定</strong>です。<strong style="color:var(--red);">2時間ほど</strong>作業可能です。不明点あればご連絡します。
+      <span class="chat-note">&#x25B6; 作業開始予定＆予定工数の事前宣言</span>
+    </div>
+    <div class="chat-msg left">
+      <span class="chat-name">担当者</span><span class="chat-time">3:16 PM</span><br>
+      <strong style="color:var(--red);">早々にご質問失礼いたします。</strong>○○様の勤務表ですが、有休を含めた161:43が稼働時間でよろしいでしょうか。
+      <span class="chat-note">&#x25B6; クッション言葉＋具体的な質問</span>
+    </div>
+    <div class="chat-msg left">
+      <span class="chat-name">担当者</span><span class="chat-time">4:22 PM</span><br>
+      <strong style="color:var(--red);">自身の想定より進みが遅くなっております。</strong>
+      <span class="chat-note">&#x25B6; 遅延も正直に共有 → お客様「ゆっくりで大丈夫ですよー！」</span>
+    </div>
+    <div class="chat-msg left">
+      <span class="chat-name">担当者</span><span class="chat-time">5:17 PM</span><br>
+      <strong style="color:var(--red);">本日は2時間半作業しまして、以下の格納分が完了しております。</strong>
+      <span class="chat-note">&#x25B6; 作業終了宣言＋実績工数＋成果物の報告</span>
+    </div>
+    <div class="chat-msg right">
+      <span class="chat-name">お客様</span><span class="chat-time">8:30 PM</span><br>
+      勤務表きれいにそろえられてる！ばっちりです。ありがとうございます！！
+    </div>
+  </div>
+</section>
+
+<!-- ===== 28: チャットログ ポイント解説 ===== -->
+<section class="slide">
+  <h2 class="anim">チャットログから学ぶ4つのポイント</h2>
+  <p class="anim" style="margin-bottom:8px; font-size:16px; color:var(--text-light);">カードをクリックすると答えが表示されます。</p>
+  <div class="quiz-cards">
+    <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'">
+      <div class="quiz-q">Q1. 作業前に何をした？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; <strong>スケジュールを事前に共有</strong>し、質問する可能性があることも伝えた</div>
+    </div>
+    <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'">
+      <div class="quiz-q">Q2. 質問するときに心がけたことは？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; <strong>クッション言葉</strong>を使い、曖昧なまま進めず<strong>必ず確認</strong></div>
+    </div>
+    <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'">
+      <div class="quiz-q">Q3. 進みが遅いときどうした？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; <strong>正直に状況を共有</strong>。隠さず伝えたからお客様も安心できた</div>
+    </div>
+    <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'">
+      <div class="quiz-q">Q4. 作業終了時に何をした？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; <strong>実績工数＋成果物</strong>をセットで報告。次回の予定も共有</div>
+    </div>
+  </div>
+  <div class="core-message anim" style="font-size:17px; padding:12px 24px; margin-top:12px;">
+    結果：2時間で<strong>22回</strong>のやり取り。リモートでも<strong>「隣にいるような安心感」</strong>を実現！
+  </div>
+</section>
+
+<!-- ===== 29: SECTION 06 + 総括 ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 06</div>
+  <h2 class="anim">まとめ</h2>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 30: 総括 + 事例 ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">報連相総括</h2>
+  <div style="text-align:center;">
+    <p class="anim" style="font-size:20px; margin-bottom:16px;">報連相がしっかりできていれば<strong>安心感</strong>を与えられ<strong>評価が上がり</strong>、</p>
+    <p class="anim" style="font-size:20px; margin-bottom:24px;">できていなければ<strong style="color:var(--red);">不信感・不安感</strong>を与え<strong style="color:var(--red);">評価が下がります</strong>。</p>
+  </div>
+  <div class="core-message anim" style="font-size:20px; padding:16px 28px; text-align:center; border-left-color:var(--orange);">
+    「この報告(連絡)はこの人にもした方がいいのかな？」── <strong style="color:var(--orange);">迷ったらGO！！</strong>
+  </div>
+  <div style="background:var(--bg); border-radius:4px; padding:16px 24px; margin-top:16px;" class="anim">
+    <p style="font-size:14px; font-weight:700; color:var(--blue); margin-bottom:4px;">&#x2728; 素敵な事例（あるメンバー → 先輩社員への連絡）</p>
+    <p style="font-size:15px; line-height:1.7; color:var(--text-sub);">必須ではない連絡だったけど、<strong>「念のための報告です」</strong>と丁寧に運用変更を伝えてくれた。迷ったときにGOできる姿勢が、チームの信頼をつくります。</p>
+  </div>
+  <p class="anim" style="font-size:14px; color:var(--text-light); text-align:center; margin-top:12px;">※お客様からの評価は、報連相の徹底を含めたお客様対応の良し悪しにより大きく左右されます</p>
+</section>
+
+<!-- ===== 31: クロージング ===== -->
+<section class="slide title-slide">
+  <div class="tag anim">BackofficeForce</div>
+  <h1 class="anim" style="font-size:42px; line-height:1.4;">報連相を徹底して、<br>信頼される仕事を。</h1>
+  <div class="lead anim" style="font-size:18px; line-height:2;">
+    迷ったらGO！ 悪い報告こそ早く。<br>
+    報連相は、あなたとチームを守る最強のスキルです。
+  </div>
+  <div class="meta anim">
+    <span>お疲れさまでした。</span>
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- ナビゲーション -->
+<div class="nav-bar">
+  <div class="nav-group">
+    <button id="btn-prev5" class="nav-jump" onclick="jumpSlide(-5)">&#x00AB; 5</button>
+    <button id="btn-prev" onclick="changeSlide(-1)">&#x2190; Prev</button>
+  </div>
+  <span class="slide-counter" id="slide-counter">1 / 31</span>
+  <div class="nav-group">
+    <button id="btn-next" onclick="changeSlide(1)">Next &#x2192;</button>
+    <button id="btn-next5" class="nav-jump" onclick="jumpSlide(5)">5 &#x00BB;</button>
+  </div>
+</div>
+
+<script>
+let currentSlide = 0;
+let isAnimating = false;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+
+function animateElements(slide) {
+  const anims = slide.querySelectorAll('.anim');
+  anims.forEach(el => el.classList.remove('visible'));
+  anims.forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), 100 + i * 80);
+  });
+}
+
+function resetElements(slide) {
+  slide.querySelectorAll('.anim').forEach(el => el.classList.remove('visible'));
+}
+
+function showSlide(n, direction) {
+  if (n < 0 || n >= totalSlides || isAnimating) return;
+  if (n === currentSlide) { animateElements(slides[n]); return; }
+  isAnimating = true;
+  const dir = direction || (n > currentSlide ? 1 : -1);
+  const prev = slides[currentSlide];
+  const next = slides[n];
+  resetElements(prev);
+  prev.classList.remove('active');
+  prev.classList.add(dir > 0 ? 'exit-up' : 'exit-down');
+  next.classList.remove('exit-up', 'exit-down');
+  next.style.transform = dir > 0 ? 'translateY(20px)' : 'translateY(-20px)';
+  next.style.opacity = '0';
+  next.classList.add('active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      next.style.transform = '';
+      next.style.opacity = '';
+      animateElements(next);
+    });
+  });
+  setTimeout(() => { prev.classList.remove('exit-up', 'exit-down'); isAnimating = false; }, 520);
+  currentSlide = n;
+  document.getElementById('slide-counter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
+  document.getElementById('btn-prev').disabled = currentSlide === 0;
+  document.getElementById('btn-next').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('btn-prev5').disabled = currentSlide === 0;
+  document.getElementById('btn-next5').disabled = currentSlide === totalSlides - 1;
+}
+
+function changeSlide(dir) { showSlide(currentSlide + dir, dir); }
+function jumpSlide(offset) { var target = Math.max(0, Math.min(totalSlides - 1, currentSlide + offset)); showSlide(target, offset > 0 ? 1 : -1); }
+function goToSlide(n) { showSlide(n); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); changeSlide(1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); changeSlide(-1); }
+});
+
+const container = document.getElementById('slide-container');
+const BASE_W = 1280, BASE_H = 720, NAV_H = 48;
+function scaleSlides() {
+  const vw = window.innerWidth, vh = window.innerHeight - NAV_H;
+  container.style.transform = 'scale(' + Math.min(vw / BASE_W, vh / BASE_H) + ')';
+}
+window.addEventListener('resize', scaleSlides);
+scaleSlides();
+slides[0].classList.add('active');
+animateElements(slides[0]);
+</script>
+</body>
+</html>
