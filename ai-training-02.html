@@ -98,17 +98,22 @@ body {
 
 .slide.bg-gray { background: var(--bg-gray); }
 
-/* ── 順次フェードイン ── */
+/* ── 左→右リビール ── */
 
 .anim {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.7s cubic-bezier(.36,.11,.35,1), opacity 0.5s ease;
 }
 
 .anim.visible {
   opacity: 1;
-  transform: translateY(0);
+  clip-path: inset(0 0 0 0);
+}
+
+.anim.preview {
+  opacity: 0.25;
+  clip-path: inset(0 0 0 0);
 }
 
 /* ── タイトルスライド ── */
@@ -860,7 +865,7 @@ body {
     print-color-adjust: exact;
   }
   .slide:last-child { page-break-after: avoid; }
-  .anim { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .anim, .anim.visible, .anim.preview { opacity: 1 !important; clip-path: none !important; transition: none !important; }
 }
 </style>
 </head>
@@ -929,17 +934,16 @@ body {
 <!-- ===== 5: 今日のゴール ===== -->
 <section class="slide">
   <h2 class="anim">今日のゴール</h2>
-  <div class="core-message anim" style="font-size:24px; margin-bottom:24px;">
+  <div class="core-message anim" style="font-size:24px; margin-bottom:20px;">
     今日終わったとき、<br><strong>明日からAIを業務で使える場面が4つ浮かぶ</strong>状態にする。
   </div>
   <h3 class="anim">「プロンプト」とは？</h3>
-  <p class="anim" style="margin-bottom:8px;">
-    AIに対する<strong>指示文・質問文</strong>のことです。<br>
-    日本語でやりたいことを書くだけ。特別な書き方は必要ありません。
+  <p class="anim" style="margin-bottom:12px;">
+    AIに対する<strong>指示文・質問文</strong>のことです。日本語でやりたいことを書くだけ。<br>
+    今日は書き方を覚える必要はありません。<strong>どんな場面で、どう頼めばいいか</strong>を体験して帰ってください。
   </p>
-  <p class="anim" style="margin-bottom:16px; font-size:16px; color:var(--text-sub);">
-    今日はプロンプトの「書き方」を覚える必要はありません。<br>
-    <strong>どんな場面で、どう頼めばいいか</strong>を体験して帰ってください。
+  <p class="anim" style="margin-bottom:8px; font-size:16px; color:var(--text-sub);">
+    第1回では【目的】【状況】【条件】等でプロンプトを書きました。これを<strong>体系化すると次の4要素</strong>になります。
   </p>
   <div class="format-block anim">
     <span style="font-size:15px; color:var(--text-light); display:block; margin-bottom:8px;">プロンプトで意識する4つの要素</span>
@@ -1385,24 +1389,66 @@ let isAnimating = false;
 const slides = document.querySelectorAll('.slide');
 const totalSlides = slides.length;
 
-function animateElements(slide) {
-  const anims = slide.querySelectorAll('.anim');
-  anims.forEach(el => el.classList.remove('visible'));
-  anims.forEach((el, i) => {
-    setTimeout(() => el.classList.add('visible'), 100 + i * 80);
-  });
+/* ── ステップ表示（クリックで1項目ずつ） ── */
+let stepQueue = [];
+let stepIdx = 0;
+
+/* ステップ表示する対象スライド（0始まり）
+   7:GRが強い理由  16:GR回答構成  17:確信度の使い方
+   20:振り返り  22:4つの場面まとめ  23:ツール使い分け  24:コアメッセージ */
+const STEP_SLIDES = new Set([7,16,17,20,22,23,24]);
+function isStepSlide(slide) {
+  return STEP_SLIDES.has(Array.from(slides).indexOf(slide));
+}
+
+function animateElements(slide, revealAll) {
+  const anims = Array.from(slide.querySelectorAll('.anim'));
+  anims.forEach(el => { el.classList.remove('visible'); el.classList.remove('preview'); });
+  stepQueue = [];
+  stepIdx = 0;
+
+  if (!revealAll && isStepSlide(slide)) {
+    let d = 0;
+    anims.forEach(el => {
+      var tag = el.tagName.toLowerCase();
+      if (tag === 'h2' || tag === 'h1') {
+        setTimeout(() => el.classList.add('visible'), 100 + d * 120);
+        d++;
+      } else {
+        stepQueue.push(el);
+      }
+    });
+    if (stepQueue.length > 0) {
+      setTimeout(() => { stepQueue[0].classList.add('preview'); }, 100 + d * 120 + 250);
+    }
+  } else {
+    anims.forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), 100 + i * 120);
+    });
+  }
+}
+
+function revealNextStep() {
+  if (stepIdx < stepQueue.length) {
+    var el = stepQueue[stepIdx];
+    el.classList.remove('preview');
+    el.classList.add('visible');
+    stepIdx++;
+    if (stepIdx < stepQueue.length) {
+      stepQueue[stepIdx].classList.add('preview');
+    }
+    return true;
+  }
+  return false;
 }
 
 function resetElements(slide) {
-  slide.querySelectorAll('.anim').forEach(el => el.classList.remove('visible'));
+  slide.querySelectorAll('.anim').forEach(el => { el.classList.remove('visible'); el.classList.remove('preview'); });
 }
 
-function showSlide(n, direction) {
+function showSlide(n, direction, revealAll) {
   if (n < 0 || n >= totalSlides || isAnimating) return;
-  if (n === currentSlide) {
-    animateElements(slides[n]);
-    return;
-  }
+  if (n === currentSlide) { animateElements(slides[n], revealAll); return; }
   isAnimating = true;
   const dir = direction || (n > currentSlide ? 1 : -1);
   const prev = slides[currentSlide];
@@ -1421,7 +1467,7 @@ function showSlide(n, direction) {
     requestAnimationFrame(() => {
       next.style.transform = '';
       next.style.opacity = '';
-      animateElements(next);
+      animateElements(next, revealAll);
     });
   });
 
@@ -1439,16 +1485,17 @@ function showSlide(n, direction) {
 }
 
 function changeSlide(dir) {
-  showSlide(currentSlide + dir, dir);
+  if (dir === 1 && revealNextStep()) return;
+  showSlide(currentSlide + dir, dir, dir === -1);
 }
 
 function jumpSlide(offset) {
   var target = Math.max(0, Math.min(totalSlides - 1, currentSlide + offset));
-  showSlide(target, offset > 0 ? 1 : -1);
+  showSlide(target, offset > 0 ? 1 : -1, true);
 }
 
 function goToSlide(n) {
-  showSlide(n);
+  showSlide(n, undefined, true);
 }
 
 document.addEventListener('keydown', function(e) {
@@ -1459,6 +1506,12 @@ document.addEventListener('keydown', function(e) {
     e.preventDefault();
     changeSlide(-1);
   }
+});
+
+/* スライド本体クリックで次へ */
+document.querySelector('.slide-viewport').addEventListener('click', function(e) {
+  if (e.target.closest('.nav-bar, button, .toc-list, .quiz-card, a')) return;
+  changeSlide(1);
 });
 
 // スケーリング

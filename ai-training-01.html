@@ -99,17 +99,22 @@ body {
 /* 背景グレーのスライド */
 .slide.bg-gray { background: var(--bg-gray); }
 
-/* ── 順次フェードイン ── */
+/* ── 左→右リビール ── */
 
 .anim {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.7s cubic-bezier(.36,.11,.35,1), opacity 0.5s ease;
 }
 
 .anim.visible {
   opacity: 1;
-  transform: translateY(0);
+  clip-path: inset(0 0 0 0);
+}
+
+.anim.preview {
+  opacity: 0.25;
+  clip-path: inset(0 0 0 0);
 }
 
 /* ── タイトルスライド ── */
@@ -820,7 +825,7 @@ body {
     print-color-adjust: exact;
   }
   .slide:last-child { page-break-after: avoid; }
-  .anim { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .anim, .anim.visible, .anim.preview { opacity: 1 !important; clip-path: none !important; transition: none !important; }
 }
 </style>
 </head>
@@ -1421,7 +1426,7 @@ body {
     <button id="btn-prev5" class="nav-jump" onclick="jumpSlide(-5)">&#x00AB; 5</button>
     <button id="btn-prev" onclick="changeSlide(-1)">&#x2190; Prev</button>
   </div>
-  <span class="slide-counter" id="slide-counter">1 / 29</span>
+  <span class="slide-counter" id="slide-counter">1 / 32</span>
   <div class="nav-group">
     <button id="btn-next" onclick="changeSlide(1)">Next &#x2192;</button>
     <button id="btn-next5" class="nav-jump" onclick="jumpSlide(5)">5 &#x00BB;</button>
@@ -1434,24 +1439,71 @@ let isAnimating = false;
 const slides = document.querySelectorAll('.slide');
 const totalSlides = slides.length;
 
-function animateElements(slide) {
-  const anims = slide.querySelectorAll('.anim');
-  anims.forEach(el => el.classList.remove('visible'));
-  anims.forEach((el, i) => {
-    setTimeout(() => el.classList.add('visible'), 100 + i * 80);
-  });
+/* ── ステップ表示（クリックで1項目ずつ） ── */
+let stepQueue = [];
+let stepIdx = 0;
+
+/* ステップ表示する対象スライド（0始まり）
+   4:質と再現性  7:生成AIとは  8:得意なこと  9:できないこと
+   15-19:リスク①〜④+マスキング  20:使わない判断基準
+   21:どう確認するか  22:ルール5か条
+   28:ナレッジ課題  29:GR紹介  30:今の正解  31:まとめ */
+const STEP_SLIDES = new Set([4,7,8,9,15,16,17,18,19,20,21,22,28,29,30,31]);
+function isStepSlide(slide) {
+  return STEP_SLIDES.has(Array.from(slides).indexOf(slide));
+}
+
+function animateElements(slide, revealAll) {
+  const anims = Array.from(slide.querySelectorAll('.anim'));
+  anims.forEach(el => { el.classList.remove('visible'); el.classList.remove('preview'); });
+  stepQueue = [];
+  stepIdx = 0;
+
+  if (!revealAll && isStepSlide(slide)) {
+    /* ステップモード: h2 だけ自動表示、残りはクリックで順次表示 */
+    let d = 0;
+    anims.forEach(el => {
+      var tag = el.tagName.toLowerCase();
+      if (tag === 'h2' || tag === 'h1') {
+        setTimeout(() => el.classList.add('visible'), 100 + d * 120);
+        d++;
+      } else {
+        stepQueue.push(el);
+      }
+    });
+    /* 最初の1項目を半透明で予告表示 */
+    if (stepQueue.length > 0) {
+      setTimeout(() => { stepQueue[0].classList.add('preview'); }, 100 + d * 120 + 250);
+    }
+  } else {
+    /* 通常モード: 全要素を順番にアニメーション */
+    anims.forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), 100 + i * 120);
+    });
+  }
+}
+
+function revealNextStep() {
+  if (stepIdx < stepQueue.length) {
+    var el = stepQueue[stepIdx];
+    el.classList.remove('preview');
+    el.classList.add('visible');
+    stepIdx++;
+    if (stepIdx < stepQueue.length) {
+      stepQueue[stepIdx].classList.add('preview');
+    }
+    return true;
+  }
+  return false;
 }
 
 function resetElements(slide) {
-  slide.querySelectorAll('.anim').forEach(el => el.classList.remove('visible'));
+  slide.querySelectorAll('.anim').forEach(el => { el.classList.remove('visible'); el.classList.remove('preview'); });
 }
 
-function showSlide(n, direction) {
+function showSlide(n, direction, revealAll) {
   if (n < 0 || n >= totalSlides || isAnimating) return;
-  if (n === currentSlide) {
-    animateElements(slides[n]);
-    return;
-  }
+  if (n === currentSlide) { animateElements(slides[n], revealAll); return; }
   isAnimating = true;
   const dir = direction || (n > currentSlide ? 1 : -1);
   const prev = slides[currentSlide];
@@ -1470,7 +1522,7 @@ function showSlide(n, direction) {
     requestAnimationFrame(() => {
       next.style.transform = '';
       next.style.opacity = '';
-      animateElements(next);
+      animateElements(next, revealAll);
     });
   });
 
@@ -1488,16 +1540,17 @@ function showSlide(n, direction) {
 }
 
 function changeSlide(dir) {
-  showSlide(currentSlide + dir, dir);
+  if (dir === 1 && revealNextStep()) return;
+  showSlide(currentSlide + dir, dir, dir === -1);
 }
 
 function jumpSlide(offset) {
   var target = Math.max(0, Math.min(totalSlides - 1, currentSlide + offset));
-  showSlide(target, offset > 0 ? 1 : -1);
+  showSlide(target, offset > 0 ? 1 : -1, true);
 }
 
 function goToSlide(n) {
-  showSlide(n);
+  showSlide(n, undefined, true);
 }
 
 function togglePrompt(type) {
@@ -1526,6 +1579,12 @@ document.addEventListener('keydown', function(e) {
     e.preventDefault();
     changeSlide(-1);
   }
+});
+
+/* スライド本体クリックで次へ */
+document.querySelector('.slide-viewport').addEventListener('click', function(e) {
+  if (e.target.closest('.nav-bar, button, .toc-list, .quiz-card, .prompt-toggle, a')) return;
+  changeSlide(1);
 });
 
 // スケーリング

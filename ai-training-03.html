@@ -228,8 +228,9 @@ body {
 
 /* ── アニメーション ── */
 
-.anim { opacity: 0; transform: translateY(16px); transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1); }
-.anim.visible { opacity: 1; transform: translateY(0); }
+.anim { opacity: 0; clip-path: inset(0 100% 0 0); transition: clip-path 0.7s cubic-bezier(.36,.11,.35,1), opacity 0.5s ease; }
+.anim.visible { opacity: 1; clip-path: inset(0 0 0 0); }
+.anim.preview { opacity: 0.25; clip-path: inset(0 0 0 0); }
 
 /* ── 印刷用 ── */
 @media print {
@@ -255,7 +256,7 @@ body {
     print-color-adjust: exact;
   }
   .slide:last-child { page-break-after: avoid; }
-  .anim, .anim.visible { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .anim, .anim.visible, .anim.preview { opacity: 1 !important; clip-path: none !important; transition: none !important; }
 }
 </style>
 </head>
@@ -412,6 +413,10 @@ body {
 <!-- ===== 10: プロンプトのテンプレート化 ===== -->
 <section class="slide bg-gray">
   <h2 class="anim">プロンプトのテンプレート化</h2>
+  <p class="anim" style="margin-bottom:4px; font-size:16px; color:var(--text-sub);">
+    第1回で「疑問を人に聞いて記録 → AIで整理 → 資産化」というナレッジ課題を出しました。<br>
+    ここからは、その<strong>「資産化」をさらに進める方法</strong>を紹介します。
+  </p>
   <p class="anim" style="margin-bottom:12px; font-size:17px;">良いプロンプトができたら、あなただけが使うのはもったいない。<br><strong>固有の情報を変数に置き換える</strong>だけでテンプレートになります。</p>
   <div style="display:flex; gap:16px;">
     <div style="flex:1;" class="anim">
@@ -487,8 +492,8 @@ body {
       <p class="project-impact">&#x26A1; 会議録 → マニュアルの変換を自動化</p>
     </div>
     <div class="project-card featured anim">
-      <div class="project-header"><span class="project-name">BOF月次レポートメーカー</span><span class="status-badge testing">Phase 1完了</span></div>
-      <p class="project-desc">商談議事録115件をAIが自動分析 → 顧客フェーズ・受注確度・リスクを抽出 → 月次レポート生成</p>
+      <div class="project-header"><span class="project-name">BOF月次レポートメーカー</span><span class="status-badge running">運用中</span></div>
+      <p class="project-desc">商談議事録をAIが毎月自動分析 → 顧客フェーズ・受注確度・リスクを抽出 → 月次レポート生成</p>
       <p class="project-impact">&#x26A1; 議事録が「記録」から「経営データ」に変わる</p>
     </div>
     <div class="project-card anim">
@@ -497,7 +502,7 @@ body {
     </div>
     <div class="project-card anim" style="display:flex; gap:20px;">
       <div style="flex:1;"><div class="project-header"><span class="project-name">BOF議事録作成GPT</span><span class="status-badge concept">構想中</span></div><p class="project-desc">議事録作成の自動化ツール</p></div>
-      <div style="flex:1;"><div class="project-header"><span class="project-name">決算報告書レポートGPT</span><span class="status-badge concept">構想中</span></div><p class="project-desc">決算データから報告書を自動生成</p></div>
+      <div style="flex:1;"><div class="project-header"><span class="project-name">決算報告書Reader</span><span class="status-badge running">運用中</span></div><p class="project-desc">決算PDF → AIが3期比較分析 → 売上・利益・財務指標レポートを自動生成</p></div>
     </div>
   </div>
 </section>
@@ -508,7 +513,7 @@ body {
   <p class="anim" style="font-size:16px; color:var(--text-sub); margin-bottom:12px;">クライアント対応のスピードを上げるための<strong>通知の自動化</strong>です。</p>
   <div class="project-cards">
     <div class="project-card featured anim">
-      <div class="project-header"><span class="project-name">Chatwork → Teams 通知システム</span><span class="status-badge running">テスト中</span></div>
+      <div class="project-header"><span class="project-name">Chatwork → Teams 通知システム</span><span class="status-badge running">導入展開中</span></div>
       <p class="project-desc">クライアントのChatworkメッセージをリアルタイムでTeamsに通知。30分後の自動受領メッセージ、メンション判定、営業時間内外の切替も装備</p>
       <p class="project-impact">&#x26A1; チーム全体で対応状況を把握し、返信遅延を防止</p>
     </div>
@@ -549,7 +554,7 @@ body {
   <p class="anim" style="font-size:16px; color:var(--text-sub); margin-bottom:12px;">AIを使って<strong>情報の検索・管理・スケジュール調整</strong>を効率化します。</p>
   <div class="project-cards">
     <div class="project-card featured anim" style="border-left-color:var(--green);">
-      <div class="project-header"><span class="project-name">GRスタンダードプラスα</span><span class="status-badge testing">テスト中</span></div>
+      <div class="project-header"><span class="project-name">GRスタンダードプラスα</span><span class="status-badge running">運用中</span></div>
       <p class="project-desc">第1回・第2回で紹介済み。バックオフィス業務のナレッジをAIチャットボットで24時間回答。公的機関のリアルタイム検索が強み</p>
       <p class="project-impact" style="color:var(--green);">★ 受講者の皆さんにも使ってもらっているツール</p>
     </div>
@@ -642,7 +647,7 @@ body {
 <!-- ===== 20: 変わらない3つの原則 ===== -->
 <section class="slide">
   <h2 class="anim">変わらない3つの原則</h2>
-  <p class="anim" style="margin-bottom:20px; font-size:18px;">ツールや場面が変わっても、この3つは変わりません。</p>
+  <p class="anim" style="margin-bottom:20px; font-size:18px;">第1回で学んだ5か条を、最も大切な<strong>3つに凝縮</strong>しました。<br>ツールや場面が変わっても、この3つは変わりません。</p>
   <div class="format-block anim" style="font-size:22px; line-height:2.6;">
     <span class="format-label">01</span>　AIの回答は出発点。<strong>最終確認は必ず人が行う</strong><br>
     <span class="format-label">02</span>　<strong>実データ・機密情報</strong>は入力しない<br>
@@ -717,21 +722,66 @@ let isAnimating = false;
 const slides = document.querySelectorAll('.slide');
 const totalSlides = slides.length;
 
-function animateElements(slide) {
-  const anims = slide.querySelectorAll('.anim');
-  anims.forEach(el => el.classList.remove('visible'));
-  anims.forEach((el, i) => {
-    setTimeout(() => el.classList.add('visible'), 100 + i * 80);
-  });
+/* ── ステップ表示（クリックで1項目ずつ） ── */
+let stepQueue = [];
+let stepIdx = 0;
+
+/* ステップ表示する対象スライド（0始まり）
+   12-15:プロジェクト紹介(Category 01〜04)
+   19:3原則  21:コアメッセージ */
+const STEP_SLIDES = new Set([12,13,14,15,19,21]);
+function isStepSlide(slide) {
+  return STEP_SLIDES.has(Array.from(slides).indexOf(slide));
+}
+
+function animateElements(slide, revealAll) {
+  const anims = Array.from(slide.querySelectorAll('.anim'));
+  anims.forEach(el => { el.classList.remove('visible'); el.classList.remove('preview'); });
+  stepQueue = [];
+  stepIdx = 0;
+
+  if (!revealAll && isStepSlide(slide)) {
+    let d = 0;
+    anims.forEach(el => {
+      var tag = el.tagName.toLowerCase();
+      if (tag === 'h2' || tag === 'h1') {
+        setTimeout(() => el.classList.add('visible'), 100 + d * 120);
+        d++;
+      } else {
+        stepQueue.push(el);
+      }
+    });
+    if (stepQueue.length > 0) {
+      setTimeout(() => { stepQueue[0].classList.add('preview'); }, 100 + d * 120 + 250);
+    }
+  } else {
+    anims.forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), 100 + i * 120);
+    });
+  }
+}
+
+function revealNextStep() {
+  if (stepIdx < stepQueue.length) {
+    var el = stepQueue[stepIdx];
+    el.classList.remove('preview');
+    el.classList.add('visible');
+    stepIdx++;
+    if (stepIdx < stepQueue.length) {
+      stepQueue[stepIdx].classList.add('preview');
+    }
+    return true;
+  }
+  return false;
 }
 
 function resetElements(slide) {
-  slide.querySelectorAll('.anim').forEach(el => el.classList.remove('visible'));
+  slide.querySelectorAll('.anim').forEach(el => { el.classList.remove('visible'); el.classList.remove('preview'); });
 }
 
-function showSlide(n, direction) {
+function showSlide(n, direction, revealAll) {
   if (n < 0 || n >= totalSlides || isAnimating) return;
-  if (n === currentSlide) { animateElements(slides[n]); return; }
+  if (n === currentSlide) { animateElements(slides[n], revealAll); return; }
   isAnimating = true;
   const dir = direction || (n > currentSlide ? 1 : -1);
   const prev = slides[currentSlide];
@@ -747,7 +797,7 @@ function showSlide(n, direction) {
     requestAnimationFrame(() => {
       next.style.transform = '';
       next.style.opacity = '';
-      animateElements(next);
+      animateElements(next, revealAll);
     });
   });
   setTimeout(() => { prev.classList.remove('exit-up', 'exit-down'); isAnimating = false; }, 520);
@@ -759,13 +809,25 @@ function showSlide(n, direction) {
   document.getElementById('btn-next5').disabled = currentSlide === totalSlides - 1;
 }
 
-function changeSlide(dir) { showSlide(currentSlide + dir, dir); }
-function jumpSlide(offset) { var target = Math.max(0, Math.min(totalSlides - 1, currentSlide + offset)); showSlide(target, offset > 0 ? 1 : -1); }
-function goToSlide(n) { showSlide(n); }
+function changeSlide(dir) {
+  if (dir === 1 && revealNextStep()) return;
+  showSlide(currentSlide + dir, dir, dir === -1);
+}
+function jumpSlide(offset) {
+  var target = Math.max(0, Math.min(totalSlides - 1, currentSlide + offset));
+  showSlide(target, offset > 0 ? 1 : -1, true);
+}
+function goToSlide(n) { showSlide(n, undefined, true); }
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); changeSlide(1); }
   else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); changeSlide(-1); }
+});
+
+/* スライド本体クリックで次へ */
+document.querySelector('.slide-viewport').addEventListener('click', function(e) {
+  if (e.target.closest('.nav-bar, button, .toc-list, .quiz-card, a')) return;
+  changeSlide(1);
 });
 
 const container = document.getElementById('slide-container');
