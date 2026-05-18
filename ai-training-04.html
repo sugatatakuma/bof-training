@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI研修 第4回 ── AIの下書きを"提出できる成果物"に仕上げる</title>
+<title>AI研修 第4回 ── 手入力10分の表が、ChatGPTで30秒に</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -111,7 +111,7 @@ body {
 .bg-gray .code-block { background: var(--bg); }
 
 .toc-list { list-style: none; padding: 0; }
-.toc-list li { padding: 18px 0; border-bottom: 1px solid var(--bg-gray); cursor: pointer; transition: all 0.3s; font-size: 20px; font-weight: 500; display: flex; align-items: center; gap: 24px; color: var(--text); }
+.toc-list li { padding: 14px 0; border-bottom: 1px solid var(--bg-gray); cursor: pointer; transition: all 0.3s; font-size: 19px; font-weight: 500; display: flex; align-items: center; gap: 24px; color: var(--text); }
 .toc-list li:last-child { border-bottom: none; }
 .toc-list li:hover { padding-left: 12px; color: var(--blue); }
 .toc-list li .toc-number { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 14px; color: var(--text-light); width: 24px; flex-shrink: 0; letter-spacing: 1px; }
@@ -150,23 +150,14 @@ body {
 .closing-list li:hover { padding-left: 12px; background: var(--blue-light); }
 .closing-list li .check { color: var(--blue); font-weight: 700; flex-shrink: 0; margin-top: 3px; font-size: 14px; }
 
-/* ── 第4回新規: 4ステップフロー ── */
-.flow-cards { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin: 12px 0; }
-.flow-card { background: var(--bg-gray); border-radius: 4px; padding: 20px 18px; text-align: center; border-top: 3px solid var(--blue); transition: all 0.3s cubic-bezier(0,1,0.64,1); }
+/* ── フローカード（7ステップ等） ── */
+.flow-cards { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin: 12px 0; }
+.flow-card { background: var(--bg-gray); border-radius: 4px; padding: 14px 8px; text-align: center; border-top: 3px solid var(--blue); transition: all 0.3s cubic-bezier(0,1,0.64,1); }
 .bg-gray .flow-card { background: var(--bg); }
 .flow-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.06); }
-.flow-card .flow-num { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; color: var(--blue); letter-spacing: 2px; margin-bottom: 8px; }
-.flow-card .flow-title { font-size: 19px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-.flow-card .flow-desc { font-size: 13px; color: var(--text-sub); line-height: 1.5; }
-
-/* ── 4観点リスト ── */
-.viewpoint-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-.viewpoint-card { background: var(--bg-gray); border-radius: 4px; padding: 16px 18px; border-left: 3px solid var(--orange); transition: all 0.3s cubic-bezier(0,1,0.64,1); }
-.bg-gray .viewpoint-card { background: var(--bg); }
-.viewpoint-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
-.viewpoint-card .vp-num { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; color: var(--orange); letter-spacing: 2px; margin-bottom: 4px; }
-.viewpoint-card .vp-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-.viewpoint-card .vp-desc { font-size: 14px; color: var(--text-sub); line-height: 1.6; }
+.flow-card .flow-num { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 11px; color: var(--blue); letter-spacing: 1px; margin-bottom: 4px; }
+.flow-card .flow-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+.flow-card .flow-desc { font-size: 11px; color: var(--text-sub); line-height: 1.4; }
 
 /* ── ステップタイマー ── */
 .step-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
@@ -177,6 +168,14 @@ body {
 /* ── 警告ボックス ── */
 .alert-box { background: var(--red-light); border-left: 3px solid var(--red); padding: 14px 20px; margin: 12px 0; font-size: 16px; line-height: 1.7; }
 .alert-box strong { color: var(--red); }
+
+/* ── 復元の型（3ステップフロー） ── */
+.restore-steps { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 16px 0; }
+.restore-step { background: var(--bg-gray); border-radius: 4px; padding: 22px 24px; border-left: 3px solid var(--green); }
+.bg-gray .restore-step { background: var(--bg); }
+.restore-step .restore-num { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12px; color: var(--green); letter-spacing: 2px; margin-bottom: 8px; }
+.restore-step .restore-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.restore-step .restore-desc { font-size: 14px; color: var(--text-sub); line-height: 1.7; }
 
 .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 48px; background: var(--bg); border-top: 1px solid #e8e8e8; display: flex; align-items: center; justify-content: center; z-index: 100; }
 .nav-group { display: flex; align-items: center; gap: 2px; }
@@ -228,7 +227,7 @@ body {
 <section class="slide title-slide">
   <div class="tag anim">BackofficeForce Inc.</div>
   <h1 class="anim">AI研修<br>第4回</h1>
-  <div class="lead anim">AIの下書きを<br>"提出できる成果物"に仕上げる。</div>
+  <div class="lead anim">手入力10分の表が、ChatGPTで30秒に。<br>機密情報を守りながら経理のExcel作業を自動化する。</div>
   <div class="meta anim">
     <span>新卒社員向け</span>
     <span>60 min</span>
@@ -240,370 +239,357 @@ body {
 <section class="slide bg-gray">
   <h2 class="anim">Agenda</h2>
   <ul class="toc-list">
-    <li class="anim" onclick="goToSlide(2)"><span class="toc-number">01</span>導入・前回振り返り<span class="toc-time">5 min</span></li>
-    <li class="anim" onclick="goToSlide(5)"><span class="toc-number">02</span>品質保証の型 ── 4ステップサイクル<span class="toc-time">15 min</span></li>
-    <li class="anim" onclick="goToSlide(10)"><span class="toc-number">03</span>クライアント返信メール仕上げハンズオン<span class="toc-time">25 min</span></li>
-    <li class="anim" onclick="goToSlide(16)"><span class="toc-number">04</span>議事録作成GPT 実演デモ<span class="toc-time">10 min</span></li>
-    <li class="anim" onclick="goToSlide(18)"><span class="toc-number">05</span>まとめ・宿題<span class="toc-time">5 min</span></li>
+    <li class="anim" onclick="goToSlide(2)"><span class="toc-number">01</span>導入・Before/After 実演<span class="toc-time">5 min</span></li>
+    <li class="anim" onclick="goToSlide(6)"><span class="toc-number">02</span>ChatGPTで表を作る2つの型<span class="toc-time">8 min</span></li>
+    <li class="anim" onclick="goToSlide(10)"><span class="toc-number">03</span>マスキングの型 ── 必須3ルール＋復元手順<span class="toc-time">7 min</span></li>
+    <li class="anim" onclick="goToSlide(14)"><span class="toc-number">04</span>ハンズオン1：経費精算書<span class="toc-time">15 min</span></li>
+    <li class="anim" onclick="goToSlide(17)"><span class="toc-number">05</span>ハンズオン2：請求書管理表＋関数<span class="toc-time">18 min</span></li>
+    <li class="anim" onclick="goToSlide(20)"><span class="toc-number">06</span>業務適用ワーク・宿題<span class="toc-time">7 min</span></li>
   </ul>
 </section>
 
-<!-- ===== 3: Section 01 導入・前回振り返り ===== -->
+<!-- ===== 3: Section 01 導入 ===== -->
 <section class="slide section-slide">
   <div class="section-number anim">Section 01</div>
-  <h2 class="anim">導入<br>前回振り返り</h2>
+  <h2 class="anim">導入<br>Before/After 実演</h2>
   <div class="section-time anim">5 min</div>
   <div class="accent-line anim"></div>
 </section>
 
-<!-- ===== 4: 前回のおさらい（クイズ） ===== -->
+<!-- ===== 4: 前回までの振り返り（クイズ） ===== -->
 <section class="slide bg-gray">
-  <h2 class="anim">前回のおさらい</h2>
-  <p class="anim" style="margin-bottom:16px; font-size:16px; color:var(--text-light);">第3回で学んだことを振り返りましょう。</p>
+  <h2 class="anim">第1〜3回の振り返り</h2>
+  <p class="anim" style="margin-bottom:16px; font-size:16px; color:var(--text-light);">今日のテーマと直結する3問です。</p>
   <div class="quiz-cards" style="grid-template-columns: 1fr 1fr 1fr;">
     <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'" style="cursor:pointer;">
-      <div class="quiz-q">Q1. AI適用の3パターンは？</div>
-      <div class="quiz-a" style="display:none;">&#x2192; <strong>作る・整理する・調べる</strong></div>
+      <div class="quiz-q">Q1. 第1回で習った<br>「AIに入力してはいけないもの」は？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; <strong>実データ・機密情報</strong><br>マスキングして使う、と教えました。今日その実践です。</div>
     </div>
     <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'" style="cursor:pointer;">
-      <div class="quiz-q">Q2. 第3回で紹介された<br>社内AI化プロジェクトは何件？</div>
-      <div class="quiz-a" style="display:none;">&#x2192; <strong>13件</strong><br>文書/通知/マッチング/ナレッジの4カテゴリ</div>
+      <div class="quiz-q">Q2. 第2回で習った<br>AIを使う4つの場面は？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; <strong>作る・整理する・調べる・話す</strong><br>今日は『作る』、特にExcel表を作る話です。</div>
     </div>
     <div class="quiz-card anim" onclick="this.querySelector('.quiz-a').style.display='block'" style="cursor:pointer;">
-      <div class="quiz-q">Q3. 1回の発見を<br>全員の資産に変えるには？</div>
-      <div class="quiz-a" style="display:none;">&#x2192; <strong>テンプレート化／チームへの共有</strong></div>
+      <div class="quiz-q">Q3. 第3回で紹介した<br>社内AI化プロジェクトは何件？</div>
+      <div class="quiz-a" style="display:none;">&#x2192; <strong>13件</strong><br>その中の『Excel表作成』にフォーカスします。</div>
     </div>
   </div>
   <p class="anim" style="font-size:13px; color:var(--text-light); margin-top:12px; text-align:center;">&#x1F449; カードをクリックすると答えが表示されます</p>
-  <div class="core-message anim" style="font-size:17px; padding:14px 22px; margin-top:20px;">
-    第3回までで「使う・組み込む」は揃いました。<br>
-    今日は<strong>AIの下書きをそのまま出さない品質保証の型</strong>を学びます。
-  </div>
 </section>
 
 <!-- ===== 5: 今日のゴール + キーフレーズ ===== -->
 <section class="slide">
   <h2 class="anim">今日のゴール</h2>
-  <div class="core-message anim" style="font-size:23px; margin-bottom:20px;">
-    AIの下書きを<strong>"そのまま出さない"</strong>。<br>提出できる成果物まで仕上げる<strong>型</strong>を覚える。
+  <div class="core-message anim" style="font-size:21px; margin-bottom:14px;">
+    <strong>1.</strong> 経理のExcel表（経費精算書・請求書管理表）を ChatGPT で<strong>自動生成</strong>できる
   </div>
-  <p class="anim" style="margin-bottom:20px; font-size:17px;">
-    60分後には、メール1本を自分でチェックして仕上げられる状態にします。
-  </p>
-  <div class="format-block anim" style="font-size:24px; text-align:center; padding:24px 32px;">
+  <div class="core-message anim warning" style="font-size:21px; margin-bottom:20px;">
+    <strong>2.</strong> 添付する前に必ず<strong>マスキング</strong>し、Excel側で<strong>元に戻す手順</strong>まで身につける
+  </div>
+  <div class="format-block anim" style="font-size:22px; text-align:center; padding:22px 32px;">
     <span class="format-label" style="font-size:13px; letter-spacing:3px;">KEY PHRASE</span><br><br>
-    <strong>「8割AIに任せる。残り2割は人が責任を持って仕上げる。」</strong>
+    <strong>「Excelは手で作らない。AIで30倍速、必ずマスキング。」</strong>
   </div>
 </section>
 
-<!-- ===== 6: Section 02 品質保証の型 ===== -->
+<!-- ===== 6: Before/After 比較 ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">Before / After ── 同じ表を作る</h2>
+  <div class="compare-row">
+    <div class="compare-box ng anim">
+      <div class="label">BEFORE ── 手入力</div>
+      <p style="font-size:36px; font-weight:900; color:var(--red); margin:12px 0 4px;">約10分</p>
+      <p style="font-size:14px; line-height:1.7;">セル1つずつ入力<br>項目10個 → 集中力切れ・転記ミス</p>
+    </div>
+    <div class="compare-box ok anim">
+      <div class="label">AFTER ── ChatGPT</div>
+      <p style="font-size:36px; font-weight:900; color:var(--green); margin:12px 0 4px;">約30秒</p>
+      <p style="font-size:14px; line-height:1.7;">メモを貼り付け → 1つ指示<br>TSV出力 → Excelに貼付 → 完成</p>
+    </div>
+  </div>
+  <div class="alert-box anim" style="margin-top:14px;">
+    <strong>ただし：</strong> そのまま貼り付けると<strong>機密情報が外部に流出</strong>します。<br>
+    今日は『マスキングしてから渡す』までセットで覚えます（Section 03）。
+  </div>
+</section>
+
+<!-- ===== 7: Section 02 ChatGPTで表を作る2つの型 ===== -->
 <section class="slide section-slide">
   <div class="section-number anim">Section 02</div>
-  <h2 class="anim">品質保証の型<br>4ステップサイクル</h2>
+  <h2 class="anim">ChatGPTで表を作る<br>2つの型</h2>
+  <div class="section-time anim">8 min</div>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 8: 型A：TSVコピペ ===== -->
+<section class="slide">
+  <h2 class="anim">型 A：TSV/Markdown コピペ → Excel 貼付</h2>
+  <p class="anim" style="font-size:16px; margin-bottom:8px;">ChatGPT に <strong>TSV（タブで区切ったテキスト）</strong>で表を作ってもらい、Excel に貼付するだけ。</p>
+  <p class="anim" style="font-size:13px; color:var(--text-light); margin-bottom:4px;">&#x1F4DD; プロンプト例</p>
+  <div class="code-block anim" style="font-size:14px; line-height:1.9;">あなたはExcel表作成の専門家です。
+以下のメモを、Excelに貼り付けられるTSV形式の表にしてください。
+1行目はヘッダ：日付 / 項目 / 金額 / 備考
+
+[メモ]
+5/10 東京→大阪 新幹線 14,720円
+5/10 大阪駅前ホテル 9,800円
+…</div>
+  <div class="format-block anim" style="font-size:14px; padding:14px 22px; margin-top:8px;">
+    <span class="format-label">3つのコツ</span> <strong>1：『TSV形式で』と明示</strong> ／ <strong>2：『ヘッダ』を指定</strong> ／ <strong>3：『Excelに貼り付けられる』と書く</strong>
+  </div>
+</section>
+
+<!-- ===== 9: 型B：関数生成 ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">型 B：関数・数式の生成依頼</h2>
+  <p class="anim" style="font-size:16px; margin-bottom:8px;">『SUMIFの書き方忘れた』『COUNTIFSってどう書く？』── <strong>ググるより ChatGPT が早い</strong>。</p>
+  <p class="anim" style="font-size:13px; color:var(--text-light); margin-bottom:4px;">&#x1F4DD; プロンプト例</p>
+  <div class="code-block anim" style="font-size:14px; line-height:1.9;">A列に取引先名、B列に金額、C列に入金期日が入った表があります。
+以下の3つをExcelの関数で出してください：
+1. 入金期日が今日より前の件数
+2. 取引先「A社」の金額合計
+3. 今月入金予定の合計</div>
+  <p class="anim" style="font-size:13px; color:var(--text-light); margin-top:8px; margin-bottom:4px;">&#x1F4A1; 期待される出力</p>
+  <div class="code-block anim" style="font-size:13px; line-height:1.8; padding:14px 22px;">1. =COUNTIF(C2:C20, "&lt;"&amp;TODAY())
+2. =SUMIF(A2:A20, "A社", B2:B20)
+3. =SUMIFS(B2:B20, C2:C20, "&gt;="&amp;EOMONTH(TODAY(),-1)+1, C2:C20, "&lt;="&amp;EOMONTH(TODAY(),0))</div>
+</section>
+
+<!-- ===== 10: 有料版でできること（参考） ===== -->
+<section class="slide">
+  <h2 class="anim">有料版でできること <span style="font-size:18px; color:var(--text-light); font-weight:400;">── 参考（今日は使いません）</span></h2>
+  <div class="format-block anim" style="font-size:17px; line-height:2;">
+    <span class="format-label">Advanced Data Analysis（ChatGPT Plus・月額20ドル）</span><br><br>
+    ChatGPT が <strong>.xlsx ファイル自体を作って返してくれる</strong>機能。<br>
+    型 A・B は『テキストを Excel に貼る』、こちらは『完成した Excel ファイルをダウンロードする』。<br>
+    グラフも自動生成可能。
+  </div>
+  <div class="core-message anim" style="margin-top:16px; font-size:17px;">
+    今日は<strong>全員無料プラン</strong>のため、<strong>型 A と型 B の2つに集中</strong>します。<br>
+    会社で本格的に使うことになったら、改めて紹介します。
+  </div>
+</section>
+
+<!-- ===== 11: Section 03 マスキングの型 ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 03</div>
+  <h2 class="anim">マスキングの型<br>必須3ルール＋復元手順</h2>
+  <div class="section-time anim">7 min</div>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 12: 第1回ルールの復習＋経理NG/OK ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">第1回マスキングルールの復習</h2>
+  <div class="compare-row">
+    <div class="compare-box ng anim">
+      <div class="label">NG ── 実データそのまま</div>
+      <p style="font-size:15px; line-height:1.8;">「<strong>田中様（得意先コード12345）</strong>の請求書が…」</p>
+    </div>
+    <div class="compare-box ok anim">
+      <div class="label">OK ── マスキング</div>
+      <p style="font-size:15px; line-height:1.8;">「<strong>ある取引先</strong>の請求書に不備があった場合…」</p>
+    </div>
+  </div>
+  <div class="alert-box anim" style="margin-top:14px;">
+    <strong>なぜ必要か：</strong> ChatGPT に入力したデータは<strong>外部のサーバーに送信される</strong>。無料プランは学習に使われる可能性あり。<strong>学習オフ設定にしても外部送信は止められない</strong>。だから実データは絶対にそのまま入れない。
+  </div>
+</section>
+
+<!-- ===== 13: マスキング3ルール表 ===== -->
+<section class="slide">
+  <h2 class="anim">マスキング3ルール <span style="font-size:18px; color:var(--text-light); font-weight:400;">── 経理表特化</span></h2>
+  <table class="data-table anim">
+    <tr>
+      <th style="width:24%;">種別</th>
+      <th style="width:38%;">NG（実データ）</th>
+      <th style="width:38%;">OK（マスキング後）</th>
+    </tr>
+    <tr>
+      <td><strong>1. 取引先名・個人名</strong></td>
+      <td>株式会社山田商事、田中様</td>
+      <td><strong>A社、担当者X</strong></td>
+    </tr>
+    <tr>
+      <td><strong>2. 口座・電話・住所・社員番号</strong></td>
+      <td>三菱UFJ 普通1234567</td>
+      <td><strong>（削除する）</strong></td>
+    </tr>
+    <tr>
+      <td><strong>3. 案件名・プロジェクト名</strong></td>
+      <td>「東京駅再開発案件」</td>
+      <td><strong>案件A</strong></td>
+    </tr>
+  </table>
+  <div class="format-block anim" style="font-size:15px; padding:14px 22px; margin-top:12px;">
+    <span class="format-label">金額のルール</span> 個別取引と<strong>紐づかない形</strong>（合計値・概数化）なら残してOK。<br>
+    例：「A社 1,234,500円」は紐づくのでNG ／「平均月商150万円」は紐づかないのでOK。
+  </div>
+</section>
+
+<!-- ===== 14: 復元の型（Ctrl+H） ===== -->
+<section class="slide bg-gray">
+  <h2 class="anim">復元の型 <span style="font-size:18px; color:var(--text-light); font-weight:400;">── Excelで30秒</span></h2>
+  <div class="restore-steps">
+    <div class="restore-step anim">
+      <div class="restore-num">STEP 01</div>
+      <div class="restore-title">Excelに貼付</div>
+      <div class="restore-desc">ChatGPT 出力（マスキング済み）を Excel に貼り付ける</div>
+    </div>
+    <div class="restore-step anim">
+      <div class="restore-num">STEP 02</div>
+      <div class="restore-title">Ctrl + H で置換</div>
+      <div class="restore-desc">『A社 → 株式会社山田商事』『担当者X → 田中』を順番に一括置換</div>
+    </div>
+    <div class="restore-step anim">
+      <div class="restore-num">STEP 03</div>
+      <div class="restore-title">対応表をローカル保管</div>
+      <div class="restore-desc">復元用の対応表は <strong>自分のPCのローカルメモ</strong> に保管</div>
+    </div>
+  </div>
+  <div class="alert-box anim">
+    <strong>禁止：</strong> 対応表を ChatGPT に貼付／Slack・Teams 投稿／個人 Google Drive 保管。<br>
+    せっかくのマスキングが台無しになります。社内 Microsoft 365 の OneNote はOK。
+  </div>
+  <div class="core-message anim success" style="margin-top:12px; font-size:18px;">
+    <strong>「マスキングと復元はセット。型を持てばコストはほぼゼロ。」</strong>
+  </div>
+</section>
+
+<!-- ===== 15: Section 04 ハンズオン1 ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 04</div>
+  <h2 class="anim">ハンズオン1<br>経費精算書を作る</h2>
   <div class="section-time anim">15 min</div>
   <div class="accent-line anim"></div>
 </section>
 
-<!-- ===== 7: なぜ型が必要か ===== -->
-<section class="slide bg-gray">
-  <h2 class="anim">なぜ"型"が必要か</h2>
-  <p class="anim" style="font-size:18px; margin-bottom:14px;">AIは便利。でも<strong>毎回同じ品質の答えは返ってこない</strong>。</p>
-  <p class="anim" style="font-size:17px; margin-bottom:14px;">今日完璧な回答が出ても、明日同じプロンプトを書いても同じ品質では出ません。<br>これがAIの特性です。</p>
-  <div class="core-message anim" style="font-size:21px;">
-    だから<strong>品質を担保するのは出力ではなく、人が回す型</strong>。<br>
-    AI出力の品質に頼るのではなく、<strong>人が回す型で品質を作る</strong>。
-  </div>
-</section>
-
-<!-- ===== 8: 4ステップサイクル ===== -->
+<!-- ===== 16: ハンズオン共通7ステップ ===== -->
 <section class="slide">
-  <h2 class="anim">4ステップサイクル</h2>
+  <h2 class="anim">ハンズオン共通フロー ── 全7ステップ</h2>
   <div class="flow-cards">
-    <div class="flow-card anim">
-      <div class="flow-num">STEP 01</div>
-      <div class="flow-title">生成</div>
-      <div class="flow-desc">AIに下書きを作らせる</div>
-    </div>
-    <div class="flow-card anim" style="border-top-color: var(--orange);">
-      <div class="flow-num" style="color:var(--orange);">STEP 02</div>
-      <div class="flow-title">検証</div>
-      <div class="flow-desc">4観点でチェックする</div>
-    </div>
-    <div class="flow-card anim">
-      <div class="flow-num">STEP 03</div>
-      <div class="flow-title">修正</div>
-      <div class="flow-desc">問題箇所を直す<br>（自分 or AIに修正指示）</div>
-    </div>
-    <div class="flow-card anim" style="border-top-color: var(--green);">
-      <div class="flow-num" style="color:var(--green);">STEP 04</div>
-      <div class="flow-title">承認</div>
-      <div class="flow-desc">自分の名前で出していいか<br>最終判断する</div>
-    </div>
+    <div class="flow-card anim"><div class="flow-num">01</div><div class="flow-title">生データ確認</div><div class="flow-desc">1 min</div></div>
+    <div class="flow-card anim" style="border-top-color: var(--red);"><div class="flow-num" style="color:var(--red);">02</div><div class="flow-title">マスキング</div><div class="flow-desc">2 min<br><strong style="color:var(--red);">必須</strong></div></div>
+    <div class="flow-card anim"><div class="flow-num">03</div><div class="flow-title">ChatGPT送信</div><div class="flow-desc">2 min</div></div>
+    <div class="flow-card anim"><div class="flow-num">04</div><div class="flow-title">Excel貼付</div><div class="flow-desc">3 min</div></div>
+    <div class="flow-card anim"><div class="flow-num">05</div><div class="flow-title">整形・関数追加</div><div class="flow-desc">3 min</div></div>
+    <div class="flow-card anim" style="border-top-color: var(--green);"><div class="flow-num" style="color:var(--green);">06</div><div class="flow-title">Ctrl+H で復元</div><div class="flow-desc">2 min</div></div>
+    <div class="flow-card anim" style="border-top-color: var(--orange);"><div class="flow-num" style="color:var(--orange);">07</div><div class="flow-title">数値検証</div><div class="flow-desc">2 min</div></div>
   </div>
-  <div class="alert-box anim" style="margin-top:20px;">
-    <strong>注意：</strong> Step 02（検証）を飛ばす人が一番多い。<br>
-    AIが出した瞬間に『お、できた』と思ってそのまま送るのが最大の事故源です。
+  <div class="alert-box anim" style="margin-top:16px;">
+    <strong>講師より：</strong> ステップ02のマスキングを<strong>絶対に飛ばさない</strong>でください。<br>
+    各机を回って、マスキング行を入れているか確認します。
   </div>
 </section>
 
-<!-- ===== 9: 4観点チェックリスト ===== -->
+<!-- ===== 17: ハンズオン1 お題＋プロンプト例 ===== -->
 <section class="slide bg-gray">
-  <h2 class="anim">4観点チェックリスト <span style="font-size:18px; color:var(--text-light); font-weight:400;">── クライアント返信メール用</span></h2>
-  <div class="viewpoint-list">
-    <div class="viewpoint-card anim" style="border-left-color: var(--red);">
-      <div class="vp-num" style="color:var(--red);">VIEWPOINT 01</div>
-      <div class="vp-title">事実整合</div>
-      <div class="vp-desc">数字・日付・固有名詞・案件名がメール文と一致しているか</div>
-    </div>
-    <div class="viewpoint-card anim">
-      <div class="vp-num">VIEWPOINT 02</div>
-      <div class="vp-title">敬語</div>
-      <div class="vp-desc">クライアント向けの敬語レベルか／二重敬語・タメ口混入はないか</div>
-    </div>
-    <div class="viewpoint-card anim">
-      <div class="vp-num">VIEWPOINT 03</div>
-      <div class="vp-title">要件網羅</div>
-      <div class="vp-desc">相手が知りたいこと・次のアクションが全部入っているか</div>
-    </div>
-    <div class="viewpoint-card anim" style="border-left-color: var(--red);">
-      <div class="vp-num" style="color:var(--red);">VIEWPOINT 04</div>
-      <div class="vp-title">誤送信防止</div>
-      <div class="vp-desc">宛先・社名・添付の有無・社外秘情報の混入チェック</div>
-    </div>
-  </div>
-  <div class="alert-box anim" style="margin-top:14px;">
-    <strong>新卒が一番ミスしやすい順</strong>。特に<strong>事実整合と誤送信防止</strong>はミスると一発で信頼を失います。
+  <h2 class="anim">ハンズオン1：お題＋プロンプト例</h2>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-bottom:4px;">&#x1F4DD; 出張メモ（配布）→ マスキング後</p>
+  <div class="code-block anim" style="font-size:13px; line-height:1.7;">[出張メモ・マスキング後]
+5/10（月）9:00  東京→大阪 新幹線 14,720円
+5/10（月）13:00 タクシー 梅田→A社 1,840円
+5/10（月）19:00 接待 担当者X と夕食 8,600円
+5/10（月）22:00 大阪駅前ホテル 宿泊 9,800円
+5/11（火）8:00  朝食 ホテル 1,200円
+5/11（火）11:00 タクシー A社→新大阪 2,100円
+5/11（火）12:30 大阪→東京 新幹線 14,720円
+5/10〜11 日当 6,000円</div>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-top:8px; margin-bottom:4px;">&#x1F4DD; ChatGPT へのプロンプト</p>
+  <div class="code-block anim" style="font-size:13px; line-height:1.7;">あなたはExcel表作成の専門家です。
+以下の出張メモを、経費精算書のTSV形式にしてください。
+1行目はヘッダ：日付 / 項目 / 金額(円) / 備考
+最後に合計行を入れてください。
+
+[出張メモ]
+（上記マスキング後メモを貼付）</div>
+  <div class="format-block anim" style="font-size:14px; padding:12px 22px; margin-top:10px;">
+    <span class="format-label">復元置換</span> A社 → 株式会社山田商事 ／ 担当者X → 田中部長 ／ <strong>合計検証：58,980円</strong>
   </div>
 </section>
 
-<!-- ===== 10: NG/OK比較 + 8割2割 ===== -->
-<section class="slide">
-  <h2 class="anim">NG/OK 比較</h2>
-  <div class="compare-row">
-    <div class="compare-box ng anim">
-      <div class="label">NG ── そのまま出す</div>
-      <ul style="font-size:15px; line-height:1.7; padding-left:18px;">
-        <li>AI出力をコピーしてそのまま送る</li>
-        <li>数字を確認しないまま転記する</li>
-        <li>「いつもお世話になっております」だけ見て送る</li>
-      </ul>
-    </div>
-    <div class="compare-box ok anim">
-      <div class="label">OK ── 4ステップを回す</div>
-      <ul style="font-size:15px; line-height:1.7; padding-left:18px;">
-        <li>AI出力 → 4観点で検証 → 修正 → 承認 → 送信</li>
-        <li>数字・固有名詞は必ず照合</li>
-        <li>自分の名前で送れるかを最後に判断</li>
-      </ul>
-    </div>
-  </div>
-  <div class="format-block anim" style="font-size:18px; text-align:center; margin-top:14px;">
-    <span class="format-label">「2割の人の仕事」とは</span><br>
-    数字の照合・過去の経緯との整合・このクライアントに合う表現か ── <strong>AIには絶対できない判断</strong>
-  </div>
-</section>
-
-<!-- ===== 11: Section 03 ハンズオン ===== -->
-<section class="slide section-slide">
-  <div class="section-number anim">Section 03</div>
-  <h2 class="anim">クライアント返信メール<br>仕上げハンズオン</h2>
-  <div class="section-time anim">25 min</div>
-  <div class="accent-line anim"></div>
-</section>
-
-<!-- ===== 12: お題 ===== -->
-<section class="slide bg-gray">
-  <h2 class="anim">お題：請求書の内訳照会への一次返信</h2>
-  <div class="code-block anim" style="font-size:14px; line-height:1.8;">【シチュエーション】
-あなたはBOFのクライアントAから「先月分の請求書の内訳を教えてほしい」
-というメールを受け取りました。確認したところ、請求書には
-「業務委託費 ¥1,200,000」という1行しか書かれておらず、
-内訳が分からない状態です。
-
-社内の担当者に確認した結果、内訳は以下と判明しました：
-- 経理代行業務 30時間 × ¥3,000 = ¥90,000
-- 給与計算業務 20時間 × ¥3,500 = ¥70,000
-- ※この2項目だけだと合計¥160,000で、
-　請求額¥1,200,000とは合わない（差分¥1,040,000）
-
-クライアントAに「内訳を確認中で、来週月曜までに正式回答する」
-旨の一次返信メールを書いてください。</div>
-  <div class="alert-box anim" style="margin-top:10px;">
-    <strong>仕掛け：</strong> 内訳合計¥160,000と請求額¥1,200,000に<strong>¥1,040,000の差分</strong>あり。<br>
-    AIに丸投げすると差分を素通りして<strong>架空の内訳</strong>を書く可能性大。
-  </div>
-</section>
-
-<!-- ===== 13: Step 1 生成 ===== -->
-<section class="slide">
-  <div class="step-header">
-    <span class="step-num">STEP 01</span>
-    <span class="step-time">5 min</span>
-    <h2 class="anim" style="margin:0;">AIで生成</h2>
-  </div>
-  <p class="anim" style="font-size:17px; margin-bottom:10px;">ChatGPTにシチュエーションを伝えて、一次返信メールの下書きを作ってもらいます。<br>プロンプトは第2回で習った<strong>4要素</strong>で。</p>
-  <p class="anim" style="font-size:14px; color:var(--text-light); margin-bottom:4px;">&#x1F4DD; プロンプト骨子の例</p>
-  <div class="code-block anim" style="font-size:14px; line-height:1.9;">あなたはBPO業務のクライアント対応を担当する専門家です。
-以下のシチュエーションで、クライアントAに送る一次返信メールを書いてください。
-
-【シチュエーション】（上記の内容をコピペ）
-
-出力の形：
-- 件名込みのメール本文
-- 200〜300字
-- 丁寧な敬語
-- 「内訳を確認中で来週月曜までに正式回答する」旨を必ず含む</div>
-  <p class="anim" style="font-size:14px; color:var(--text-light); text-align:center; margin-top:8px;">プロンプトを書く時間も含めて<strong>5分</strong>です</p>
-</section>
-
-<!-- ===== 14: Step 2 検証 ===== -->
-<section class="slide bg-gray">
-  <div class="step-header">
-    <span class="step-num" style="background:var(--orange);">STEP 02</span>
-    <span class="step-time">8 min</span>
-    <h2 class="anim" style="margin:0;">4観点で検証</h2>
-  </div>
-  <p class="anim" style="font-size:16px; margin-bottom:8px;">配布したチェックリストで4観点を確認。<strong style="color:var(--red);">★印の項目</strong>が今日の山場です。</p>
-  <div class="code-block anim" style="font-size:13px; line-height:1.8;">□ 事実整合
-　□ クライアント名が正しいか
-　□ 金額（¥1,200,000）が正しく書かれているか
-　□ 内訳の合計が請求額と一致するか
-　<strong style="color:var(--red);">★差分の存在に触れているか／触れずに勝手に内訳を書いていないか★</strong>
-　□ 期日（来週月曜）が明記されているか
-□ 敬語
-　□ 二重敬語がないか／タメ口混入がないか
-□ 要件網羅
-　□ 受領挨拶／現状（確認中）／次のアクション（来週月曜回答）が入っているか
-□ 誤送信防止
-　□ 宛先がクライアントA本人か／CC/BCC・添付・社外秘情報の混入チェック</div>
-  <div class="alert-box anim" style="margin-top:10px;">
-    <strong>AIの落とし穴：</strong> 差分を素通りして<strong>「その他諸経費 ¥1,040,000」</strong>のような架空の内訳を勝手に書くケースあり。これをクライアントに送ると一発アウトです。
-  </div>
-</section>
-
-<!-- ===== 15: Step 3 修正 + Step 4 承認 ===== -->
-<section class="slide">
-  <div style="display:flex; gap:24px;">
-    <div style="flex:1;" class="anim">
-      <div class="step-header">
-        <span class="step-num">STEP 03</span>
-        <span class="step-time">7 min</span>
-        <h2 style="margin:0; font-size:22px;">修正</h2>
-      </div>
-      <p style="font-size:15px; line-height:1.7; margin-bottom:8px;">
-        <strong>A. 自分で書き直す</strong>（軽い修正向け）<br>
-        <strong>B. AIに修正指示を出す</strong>（大きな書き直し向け）
-      </p>
-      <p style="font-size:13px; color:var(--text-light); margin-bottom:4px;">&#x1F4DD; 修正プロンプトの例</p>
-      <div class="code-block" style="font-size:12px; line-height:1.7; margin:0;">この下書きには事実整合の問題があります。
-内訳合計¥160,000と請求額¥1,200,000に
-¥1,040,000の差分があります。
-勝手に内訳を埋めずに、確認中である旨だけを
-伝える形に書き直してください。</div>
-      <p style="font-size:13px; color:var(--text-light); margin-top:8px;">修正指示も<strong style="color:var(--text);">何が問題か／どう直すか</strong>を具体的に。</p>
-    </div>
-    <div style="flex:1;" class="anim">
-      <div class="step-header">
-        <span class="step-num" style="background:var(--green);">STEP 04</span>
-        <span class="step-time">3 min</span>
-        <h2 style="margin:0; font-size:22px;">承認</h2>
-      </div>
-      <p style="font-size:15px; line-height:1.7; margin-bottom:14px;">
-        最後に<strong>自分の名前で送れるか</strong>を判断。<br>
-        1つでも「マズい」と感じたらStep 02に戻る。
-      </p>
-      <div class="format-block" style="font-size:16px; padding:18px 22px; background:var(--green-light); border-left-color:var(--green);">
-        <span class="format-label" style="color:var(--green);">承認チェックポイント</span><br><br>
-        「これを上司に見せて、<br><strong>OKと言ってもらえる自信があるか</strong>」<br><br>
-        <span style="font-size:13px; color:var(--text-light);">これだけです。</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== 16: Section 04 議事録GPTデモ ===== -->
-<section class="slide section-slide">
-  <div class="section-number anim">Section 04</div>
-  <h2 class="anim">議事録作成GPT<br>実演デモ</h2>
-  <div class="section-time anim">10 min</div>
-  <div class="accent-line anim"></div>
-</section>
-
-<!-- ===== 17: 議事録の4観点 ===== -->
-<section class="slide bg-gray">
-  <h2 class="anim">議事録もメールと同じ ── 4ステップを回す</h2>
-  <p class="anim" style="font-size:16px; margin-bottom:12px;">そろそろ社外MTGの参加機会も増えてきます。<br>議事録の検証で見るのは<strong>議事録版の4観点</strong>。</p>
-  <table class="data-table anim">
-    <tr>
-      <th style="width:25%;">観点</th>
-      <th style="width:75%;">何を見るか</th>
-    </tr>
-    <tr>
-      <td><strong style="color:var(--red);">事実整合</strong></td>
-      <td>発言者と発言内容のひも付けが正しいか</td>
-    </tr>
-    <tr>
-      <td>決定事項</td>
-      <td>決まったこと・決まっていないことが区別されているか</td>
-    </tr>
-    <tr>
-      <td>宿題</td>
-      <td><strong>誰が・何を・いつまでに</strong>やるかが明記されているか</td>
-    </tr>
-    <tr>
-      <td><strong style="color:var(--red);">機密配慮</strong></td>
-      <td>社外共有する場合、社外秘情報が混入していないか</td>
-    </tr>
-  </table>
-  <div class="core-message anim" style="font-size:18px; padding:14px 22px; margin-top:10px;">
-    社外に出していいかの判断は<strong>AIには絶対できない</strong>。<br>
-    これも今日のキーフレーズの<strong>「2割の人の仕事」</strong>です。
-  </div>
-</section>
-
-<!-- ===== 18: Section 05 まとめ・宿題 ===== -->
+<!-- ===== 18: Section 05 ハンズオン2 ===== -->
 <section class="slide section-slide">
   <div class="section-number anim">Section 05</div>
-  <h2 class="anim">まとめ<br>宿題</h2>
-  <div class="section-time anim">5 min</div>
+  <h2 class="anim">ハンズオン2<br>請求書管理表＋関数</h2>
+  <div class="section-time anim">18 min</div>
   <div class="accent-line anim"></div>
 </section>
 
-<!-- ===== 19: 今日のコアメッセージ ===== -->
+<!-- ===== 19: ハンズオン2 お題＋管理表生成プロンプト ===== -->
 <section class="slide">
-  <h2 class="anim">今日のコアメッセージ</h2>
-  <ul class="closing-list">
-    <li class="anim"><span class="check">&#x25B6;</span>AIの出力は<strong>"下書き"</strong>。提出できる成果物に仕上げるのは人の仕事</li>
-    <li class="anim"><span class="check">&#x25B6;</span>品質を担保するのは出力ではなく、<strong>人が回す型</strong>（生成→検証→修正→承認）</li>
-    <li class="anim"><span class="check">&#x25B6;</span><strong>8割AI＋2割人</strong> ── 人にしかできない判断に集中する</li>
-    <li class="anim"><span class="check">&#x25B6;</span><strong>4観点</strong>（事実整合・敬語・要件網羅・誤送信防止）はクライアント対応の最低ライン</li>
-    <li class="anim"><span class="check">&#x25B6;</span>同じ型は<strong>メールにも議事録にも</strong>そのまま使える</li>
-  </ul>
+  <h2 class="anim">ハンズオン2：管理表 TSV 生成（型 A）</h2>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-bottom:4px;">&#x1F4DD; 請求情報メモ（20件・配布）→ マスキング後（抜粋）</p>
+  <div class="code-block anim" style="font-size:13px; line-height:1.7;">[メモ・マスキング後] ※配布の20件をA社〜D社に置換
+5/1 A社 請求No.001 1,234,500円 入金期日5/31
+5/2 B社 請求No.002 870,000円 入金期日5/31
+5/2 C社 請求No.003 540,000円 入金期日4/30（未入金）
+5/3 D社 請求No.004 2,100,000円 入金期日6/15
+… 全20件</div>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-top:8px; margin-bottom:4px;">&#x1F4DD; ChatGPT プロンプト①：管理表 TSV 生成</p>
+  <div class="code-block anim" style="font-size:13px; line-height:1.7;">あなたはExcel表作成の専門家です。
+以下のメモを請求書管理表のTSVにしてください。
+1行目のヘッダ：請求日 / 取引先 / 請求番号 / 金額(円) / 入金期日 / ステータス
+ステータスは「入金期日が今日(5/18)より前」なら「遅延」、それ以外は「予定」。
+
+[メモ]
+（上記マスキング後メモを貼付）</div>
 </section>
 
-<!-- ===== 20: 宿題 ===== -->
+<!-- ===== 20: ハンズオン2 関数生成プロンプト ===== -->
 <section class="slide bg-gray">
-  <h2 class="anim">宿題 <span style="font-size:16px; color:var(--text-light); font-weight:400;">── 第5回（5/27 水）まで</span></h2>
-  <div class="core-message anim" style="font-size:19px; margin-bottom:14px;">
-    自分の業務で<strong>メール1本</strong>を、今日学んだ<strong>4ステップ</strong>で仕上げてください。
+  <h2 class="anim">ハンズオン2：集計関数の生成（型 B）</h2>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-bottom:4px;">&#x1F4DD; ChatGPT プロンプト②：関数を書いてもらう</p>
+  <div class="code-block anim" style="font-size:13px; line-height:1.7;">A列に請求日、B列に取引先(A社/B社/...)、C列に請求番号、D列に金額、
+E列に入金期日、F列にステータス(遅延/予定)が入った表があります。
+データは2行目から21行目まで。
+
+以下3つをExcelの関数で書いてください：
+1. ステータスが「遅延」の件数
+2. 取引先「A社」の金額合計
+3. 入金期日が今月（2026/5/1〜2026/5/31）の金額合計</div>
+  <p class="anim" style="font-size:14px; color:var(--text-light); margin-top:8px; margin-bottom:4px;">&#x1F4A1; 期待される ChatGPT 出力</p>
+  <div class="code-block anim" style="font-size:13px; line-height:1.8;">1. =COUNTIF(F2:F21, "遅延")
+2. =SUMIF(B2:B21, "A社", D2:D21)
+3. =SUMIFS(D2:D21, E2:E21, "&gt;=2026/5/1", E2:E21, "&lt;=2026/5/31")</div>
+  <div class="format-block anim" style="font-size:14px; padding:12px 22px; margin-top:8px;">
+    <span class="format-label">復元置換</span> A社/B社/C社/D社 → 株式会社山田商事/田中製作所/鈴木工業/高橋商事<br>
+    <span class="format-label">検証</span> 遅延=1件（C社・No.003） ／ A社合計=1,234,500円 ／ 今月予定合計=2,104,500円
   </div>
-  <p class="anim" style="font-size:15px; margin-bottom:8px;">内容は何でもOK。クライアント返信／社内連絡／上司報告／その他、自由です。<br>第5回の冒頭で1〜2名に発表してもらいます。</p>
-  <p class="anim" style="font-size:13px; color:var(--text-light); margin-top:6px; margin-bottom:4px;">&#x1F4DD; 宿題記録テンプレート</p>
-  <div class="code-block anim" style="font-size:13px; line-height:1.9;">1. メールの種類：（クライアント返信／社内連絡／上司報告／その他）
-2. AIに出させた下書き：（コピペ）
-3. 4観点でチェックして見つけた問題：（箇条書き）
-4. 修正後のメール：（コピペ）
-5. 所要時間：（生成○分／検証○分／修正○分／承認○分）
-6. 気づいたこと：（自由記述）</div>
 </section>
 
-<!-- ===== 21: 次回予告 + クロージング ===== -->
+<!-- ===== 21: Section 06 まとめ ===== -->
+<section class="slide section-slide">
+  <div class="section-number anim">Section 06</div>
+  <h2 class="anim">業務適用ワーク<br>宿題</h2>
+  <div class="section-time anim">7 min</div>
+  <div class="accent-line anim"></div>
+</section>
+
+<!-- ===== 22: コアメッセージ＋宿題 ===== -->
+<section class="slide">
+  <h2 class="anim">今日のコアメッセージ＋宿題</h2>
+  <ul class="closing-list">
+    <li class="anim"><span class="check">&#x25B6;</span><strong>Excelは手で作らない。</strong>AIで30倍速、必ずマスキング。</li>
+    <li class="anim"><span class="check">&#x25B6;</span>無料プランで使える型は2つ ── <strong>型A：TSVコピペ</strong> ／ <strong>型B：関数生成</strong></li>
+    <li class="anim"><span class="check">&#x25B6;</span><strong>マスキングと復元はセット。</strong>型を持てばコストはほぼゼロ。</li>
+    <li class="anim"><span class="check">&#x25B6;</span>金額は<strong>紐づかなければ残してOK</strong>、紐づくならマスキング。</li>
+  </ul>
+  <div class="format-block anim" style="font-size:14px; padding:14px 22px; margin-top:12px;">
+    <span class="format-label">宿題 ── 第5回（5/27 水）前日9:00まで</span><br><br>
+    自分の業務の<strong>手入力作業1つ</strong>を ChatGPT 化する設計（6項目）：<br>
+    1. 対象業務 ／ 2. ChatGPTに渡すデータ ／ 3. マスキング設計 ／ 4. プロンプト（型A/B） ／ 5. 復元対応表 ／ 6. 検証方法<br>
+    <span style="color:var(--text-light); font-size:13px;">第5回冒頭で1人ずつ30秒で発表</span>
+  </div>
+</section>
+
+<!-- ===== 23: 第5回予告 ===== -->
 <section class="slide title-slide">
   <div class="tag anim">第5回予告 ── 5/27（水）</div>
   <h1 class="anim" style="font-size:46px; line-height:1.4;">AIを安心して<br>使い続ける。</h1>
   <div class="lead anim" style="font-size:18px; line-height:2;">
-    今日学んだ品質保証の型を、<br>
-    <strong style="color:#fff;">上司への報告 / 失敗時のリカバリ / 同期との学び合い</strong>に広げます。<br>
+    <strong style="color:#fff;">報告 / 失敗時のリカバリ / 同期との学び合い</strong><br>
+    今日の宿題が、第5回の議論のタネになります。<br>
     全5回シリーズの最終回。
   </div>
   <div class="meta anim">
@@ -620,7 +606,7 @@ body {
     <button id="btn-prev5" class="nav-jump" onclick="jumpSlide(-5)">&#x00AB; 5</button>
     <button id="btn-prev" onclick="changeSlide(-1)">&#x2190; Prev</button>
   </div>
-  <span class="slide-counter" id="slide-counter">1 / 21</span>
+  <span class="slide-counter" id="slide-counter">1 / 23</span>
   <div class="nav-group">
     <button id="btn-next" onclick="changeSlide(1)">Next &#x2192;</button>
     <button id="btn-next5" class="nav-jump" onclick="jumpSlide(5)">5 &#x00BB;</button>
@@ -637,8 +623,8 @@ let stepQueue = [];
 let stepIdx = 0;
 
 /* ステップ表示する対象スライド（0始まり）
-   18:コアメッセージ */
-const STEP_SLIDES = new Set([18]);
+   21:コアメッセージ＋宿題 */
+const STEP_SLIDES = new Set([21]);
 function isStepSlide(slide) {
   return STEP_SLIDES.has(Array.from(slides).indexOf(slide));
 }
